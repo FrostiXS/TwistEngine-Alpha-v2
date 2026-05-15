@@ -16,7 +16,7 @@ Engine originally used on [Friday Night Funkin' Colors Adventure](https://x.com/
 |  :heavy_check_mark:  | :heavy_check_mark:  | nah |  :wavy_dash:  | :wavy_dash: | :heavy_check_mark:|
 
 ## Installation:
-To do this, use the appropriate setup file from the [setup folder](../master/setup).
+To do this, use the appropriate setup file from the [setup folder](setup).
 
 ## Credits:
 * [Redar13](https://x.com/Redar13176784) - Main Programmer and Head of Twist Engine.
