@@ -11,7 +11,7 @@ haxelib install flixel-addons 3.2.3 --skip-dependencies
 haxelib install flixel-ui 2.6.1 --skip-dependencies
 haxelib install thx.semver --skip-dependencies
 @REM haxelib install yagp
-haxelib install hxvlc --skip-dependencies
+haxelib git hxvlc https://github.com/MAJigsaw77/hxvlc --skip-dependencies
 haxelib install haxeui-openfl 1.7.0 --skip-dependencies
 haxelib git flxanimate https://github.com/Redar13/flxanimate dev --skip-dependencies
 @REM haxelib git away3d https://github.com/CodenameCrew/away3d
