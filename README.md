@@ -5,8 +5,10 @@
 
 Engine originally used on [Friday Night Funkin' Colors Adventure](https://x.com/FNFCAdventure) mod.
 
-**Attention:** editors have unfinished functionality.
-
+### Editor Improvements (v2)
+* **Stage Editor:** Fixed crash when saving with removed characters (Null Object Reference). Full JSON export now includes all sprite data (positions, scale, scroll factors, animations, colors). Lua export supports color properties. Added Undo/Redo (CTRL+Z / CTRL+Y). Removed WIP status from save functionality.
+* **Character Editor:** Enabled positioning silhouettes (toggle with G key) for easier character placement. Fixed health icon mouse interaction (click to flip player side). Cleaned up debug output.
+* **Chart Editor:** Added Stage Preview — see characters and stage behind the note grid with beat-synced animations (toggle in Charting tab). Cleaned up debug trace calls for cleaner console output.
 
 ### Supported platforms:
 |        Windows       |        Linux        | Mac | Html  |   HashLink  |      Android      |
