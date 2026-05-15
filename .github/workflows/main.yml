@@ -30,7 +30,7 @@ jobs:
           haxelib install hxcpp > nul --quiet
           cd setup && windows.bat
 
-      - name: Patch hxvlc extern imports
+      - name: Patch source compatibility
         shell: pwsh
         run: |
           $videoSprite = 'source/game/objects/VideoSprite.hx'
@@ -43,6 +43,12 @@ jobs:
           (Get-Content $loadingState -Raw).
             Replace('import hxvlc.externs.Types;', 'import hxvlc.externs.LibVLC;') |
             Set-Content $loadingState -NoNewline
+
+          $funkinLua = 'source/game/backend/system/scripts/FunkinLua.hx'
+          (Get-Content $funkinLua -Raw).
+            Replace("`t#if hscript`r`n`tpublic var hscript:HScriptLua = null;`r`n`tpublic var callbacks:Map<String, Dynamic> = new Map<String, Dynamic>();`r`n`tpublic static var customFunctions:Map<String, Dynamic> = new Map<String, Dynamic>();`r`n`t#end",
+                    "`t#if hscript`r`n`tpublic var hscript:HScriptLua = null;`r`n`tpublic static var customFunctions:Map<String, Dynamic> = new Map<String, Dynamic>();`r`n`t#end`r`n`t#if LUA_ALLOWED`r`n`tpublic var callbacks:Map<String, Dynamic> = new Map<String, Dynamic>();`r`n`t#end") |
+            Set-Content $funkinLua -NoNewline
 
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
