@@ -19,4 +19,4 @@ haxelib git hscript-improved https://github.com/Redar13/hscript-improved polymod
 haxelib git linc_luajit https://github.com/superpowers04/linc_luajit --skip-dependencies
 haxelib install hxdiscord_rpc --skip-dependencies
 echo Finished!
-pause
+if "%CI%"=="" pause
