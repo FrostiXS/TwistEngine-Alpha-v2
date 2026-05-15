@@ -30,6 +30,20 @@ jobs:
           haxelib install hxcpp > nul --quiet
           cd setup && windows.bat
 
+      - name: Patch hxvlc extern imports
+        shell: pwsh
+        run: |
+          $videoSprite = 'source/game/objects/VideoSprite.hx'
+          (Get-Content $videoSprite -Raw).
+            Replace('import hxvlc.externs.Types;', 'import hxvlc.externs.LibVLC;').
+            Replace('hxvlc.externs.Types.LibVLC_Media_Player_Role_T.LibVLC_Role_Game', 'LibVLC_Media_Player_Role_T.LibVLC_Role_Game') |
+            Set-Content $videoSprite -NoNewline
+
+          $loadingState = 'source/game/states/LoadingState.hx'
+          (Get-Content $loadingState -Raw).
+            Replace('import hxvlc.externs.Types;', 'import hxvlc.externs.LibVLC;') |
+            Set-Content $loadingState -NoNewline
+
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
 
