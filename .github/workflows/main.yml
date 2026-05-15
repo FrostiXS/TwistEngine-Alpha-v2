@@ -47,7 +47,7 @@ jobs:
           $funkinLua = 'source/game/backend/system/scripts/FunkinLua.hx'
           (Get-Content $funkinLua -Raw).
             Replace("`t#if hscript`r`n`tpublic var hscript:HScriptLua = null;`r`n`tpublic var callbacks:Map<String, Dynamic> = new Map<String, Dynamic>();`r`n`tpublic static var customFunctions:Map<String, Dynamic> = new Map<String, Dynamic>();`r`n`t#end",
-                    "`t#if hscript`r`n`tpublic var hscript:HScriptLua = null;`r`n`tpublic static var customFunctions:Map<String, Dynamic> = new Map<String, Dynamic>();`r`n`t#end`r`n`t#if LUA_ALLOWED`r`n`tpublic var callbacks:Map<String, Dynamic> = new Map<String, Dynamic>();`r`n`t#end") |
+                    "`t#if hscript`r`n`tpublic var hscript:HScriptLua = null;`r`n`t#end`r`n`t#if LUA_ALLOWED`r`n`tpublic var callbacks:Map<String, Dynamic> = new Map<String, Dynamic>();`r`n`tpublic static var customFunctions:Map<String, Dynamic> = new Map<String, Dynamic>();`r`n`t#end") |
             Set-Content $funkinLua -NoNewline
 
       - name: Create Version Tag
