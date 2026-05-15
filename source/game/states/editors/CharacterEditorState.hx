@@ -102,27 +102,25 @@ class CharacterEditorState extends MusicBeatUIState
 
 		add(bgLayer = new FlxTypedGroup<FlxSprite>());
 
-		/*
-			silhouettes = new FlxSpriteGroup();
-			// add(silhouettes);
+		silhouettes = new FlxSpriteGroup();
+		add(silhouettes);
 
-			dadPosition.set(100, 100);
-			bfPosition.set(770, 100);
+		dadPosition = FlxPoint.get(100, 100);
+		bfPosition = FlxPoint.get(770, 100);
 
-			var dad:FlxSprite = new FlxSprite(dadPosition.x, dadPosition.y, Paths.image('ui/editor/silhouetteDad'));
-			dad.antialiasing = ClientPrefs.globalAntialiasing;
-			dad.active = false;
-			dad.offset.set(-4, 1);
-			silhouettes.add(dad);
+		var dadSil:FlxSprite = new FlxSprite(dadPosition.x, dadPosition.y);
+		dadSil.makeGraphic(170, 400, FlxColor.RED);
+		dadSil.antialiasing = ClientPrefs.globalAntialiasing;
+		dadSil.active = false;
+		silhouettes.add(dadSil);
 
-			var boyfriend:FlxSprite = new FlxSprite(bfPosition.x, bfPosition.y + 350, Paths.image('ui/editor/silhouetteBF'));
-			boyfriend.antialiasing = ClientPrefs.globalAntialiasing;
-			boyfriend.active = false;
-			boyfriend.offset.set(-6, 2);
-			silhouettes.add(boyfriend);
+		var bfSil:FlxSprite = new FlxSprite(bfPosition.x, bfPosition.y);
+		bfSil.makeGraphic(170, 400, FlxColor.BLUE);
+		bfSil.antialiasing = ClientPrefs.globalAntialiasing;
+		bfSil.active = false;
+		silhouettes.add(bfSil);
 
-			silhouettes.alpha = 0.25;
-		 */
+		silhouettes.alpha = 0.15;
 
 		add(charLayer = new FlxTypedGroup<Character>());
 
@@ -169,23 +167,13 @@ class CharacterEditorState extends MusicBeatUIState
 				overlapedBar = false;
 			}
 		});
-		/*
 		aaa.add(leHealthIcon, function(_):Void
 		{
 			leHealthIcon.baseScale = FlxG.mouse.pressed ? 0.95 : 1.1;
-			// overlapedBar = true;
-		}
+		},
 		function(_):Void {
-			// final arrayAnims = [for (i in leHealthIcon.animsStats.keys()) i];
-			// final oldAnim = leHealthIcon.animation.name;
-			// var animNext = FlxG.random.getObject(arrayAnims);
-			// if (arrayAnims.length > 1)
-			// 	while (animNext == oldAnim)
-			// 		animNext = FlxG.random.getObject(arrayAnims);
-			// leHealthIcon.playAnim(animNext, true);
 			leHealthIcon.isPlayer = !leHealthIcon.isPlayer;
 			leHealthIcon.baseScale = FlxG.mouse.pressed ? 0.95 : 1.1;
-			// overlapedBar = true;
 		},
 		function(_):Void
 		{
@@ -194,9 +182,7 @@ class CharacterEditorState extends MusicBeatUIState
 		function(_):Void
 		{
 			leHealthIcon.baseScale = 1;
-			// overlapedBar = false;
 		});
-		*/
 		add(aaa);
 
 		dumbTexts = new FlxTypedGroup<FlxStaticText>();
@@ -222,6 +208,7 @@ class CharacterEditorState extends MusicBeatUIState
 		Drag Middle and Right Mouse Button - Move Character Camera Point
 		T - Reset Current Offset
 		TAB - Toggle UI HUD
+		G - Toggle Position Silhouettes
 		Hold Shift to Move 10x slower", 8);
 		tipText.cameras = [camHUD];
 		tipText.setFormat(null, 8, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE_FAST, FlxColor.BLACK);
@@ -337,13 +324,11 @@ class CharacterEditorState extends MusicBeatUIState
 
 	function loadFromFile(file:String)
 	{
-		trace(file);
 		// try{
 		var infoShit;
 		infoShit = DropFileUtil.getInfoPath(file, ANIMATE_ATLAS);
 		if (infoShit != null)
 		{
-			trace(infoShit);
 			// if (infoShit.modFolder != ModsFolder.currentModFolder && infoShit.modFolder != "assets")
 			// {
 			// 	return;
@@ -391,7 +376,6 @@ class CharacterEditorState extends MusicBeatUIState
 				reloadCharacterImage(infoShit.file);
 				return;
 			}
-			trace(infoShit.file);
 			leHealthIcon.changeIcon(healthIconInputText.text = infoShit.file);
 			char.healthIcon = infoShit.file;
 			updatePresence();
@@ -1003,7 +987,6 @@ class CharacterEditorState extends MusicBeatUIState
 
 			reloadAnimationDropDown();
 			genBoyOffsets();
-			trace('Added/Updated animation: ' + animationInputText.text);
 		});
 
 		var flipAnimButton:FlxButton = new FlxButton(addUpdateButton.x, addUpdateButton.y + 23, "Flip Left Right", function()
@@ -1070,7 +1053,6 @@ class CharacterEditorState extends MusicBeatUIState
 						char.playAnim(char.animationsArray[0].anim, true);
 					reloadAnimationDropDown();
 					genBoyOffsets();
-					trace('Removed animation: ' + animationInputText.text);
 					break;
 				}
 			}
@@ -1115,7 +1097,6 @@ class CharacterEditorState extends MusicBeatUIState
 				char.addAnimation(newAnim.anim, newAnim.name, newAnim.indices, null, newAnim.fps,
 					newAnim.loopPoint, newAnim.loop, newAnim.flipX, newAnim.flipY);
 				char.animationsArray.push(newAnim);
-				trace('Added $animJson from $animBase');
 			}
 
 			if (!char.useAtlas)
@@ -1176,7 +1157,6 @@ class CharacterEditorState extends MusicBeatUIState
 					char.animOffsets.get(anim.anim).put();
 					char.animOffsets.remove(anim.anim);
 				}
-				trace('Removed \"${anim.anim}\" anim');
 			}
 			if (e.length > 0)
 				for (i in e)
@@ -1732,10 +1712,11 @@ class CharacterEditorState extends MusicBeatUIState
 			if (FlxG.keys.justPressed.TAB)
 			{
 				camHUD.visible = !camHUD.visible;
-				// UI_box.skipButtonUpdate = UI_characterbox.skipButtonUpdate = !camHUD.visible;
-				// for (i in [UI_box, UI_characterbox]) i.forEachOfType(flixel.addons.ui.interfaces.IFlxUIClickable, (i) -> {
-				// 	cast(i, FlxSprite).active = camHUD.visible;
-				// });
+			}
+
+			if (FlxG.keys.justPressed.G && silhouettes != null)
+			{
+				silhouettes.visible = !silhouettes.visible;
 			}
 
 			if (FlxG.keys.justPressed.R && !ColorPickerGroup.pointerOverlaps(colorPicker))
@@ -2121,7 +2102,6 @@ class CharacterEditorState extends MusicBeatUIState
 				"characters",
 				char.curCharacter + '.json'
 			]);
-			trace("open in " + savePath);
 			FileUtil.browseForSaveFile([FileUtil.FILE_FILTER_JSON],
 				path -> {
 					#if sys

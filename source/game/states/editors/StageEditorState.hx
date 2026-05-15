@@ -260,7 +260,8 @@ class StageEditorState extends MusicBeatState
 		ALT + W - Open File Dialog to Load Charater (Needed to Select Character)
 		Hold X or Y to change values: Scroll Factor (< or >) and Scale ({ or })
 		Hold Shift to Move 10x faster
-		CTRL + S - Save stage in lua (WIP)", 8);
+		CTRL + S - Save Stage (JSON + Lua)
+		CTRL + Z - Undo | CTRL + Y - Redo", 8);
 		tipText.cameras = [camHUD];
 		tipText.setFormat(null, 8, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE_FAST, FlxColor.BLACK);
 		tipText.borderSize = 0.75;
@@ -481,6 +482,49 @@ class StageEditorState extends MusicBeatState
 		// trace([for (i in dataForLayers) [i.tag, i.order, i.obj == null]]);
 	}
 
+	var _undoStack:Array<{tag:String, x:Float, y:Float, scaleX:Float, scaleY:Float, scrollX:Float, scrollY:Float}> = [];
+	var _redoStack:Array<{tag:String, x:Float, y:Float, scaleX:Float, scaleY:Float, scrollX:Float, scrollY:Float}> = [];
+
+	function pushUndo() {
+		if (curObject == null || curData == null) return;
+		_undoStack.push({
+			tag: curData.tag,
+			x: curObject.x,
+			y: curObject.y,
+			scaleX: curObject.scale.x,
+			scaleY: curObject.scale.y,
+			scrollX: curObject.scrollFactor.x,
+			scrollY: curObject.scrollFactor.y
+		});
+		_redoStack = [];
+	}
+
+	function applyUndoRedo(entry:{tag:String, x:Float, y:Float, scaleX:Float, scaleY:Float, scrollX:Float, scrollY:Float}, isUndo:Bool) {
+		for (spr => data in layersMap) {
+			if (data.tag == entry.tag) {
+				var current = {
+					tag: data.tag,
+					x: spr.x,
+					y: spr.y,
+					scaleX: spr.scale.x,
+					scaleY: spr.scale.y,
+					scrollX: spr.scrollFactor.x,
+					scrollY: spr.scrollFactor.y
+				};
+				if (isUndo)
+					_redoStack.push(current);
+				else
+					_undoStack.push(current);
+				spr.setPosition(entry.x, entry.y);
+				spr.scale.set(entry.scaleX, entry.scaleY);
+				spr.scrollFactor.set(entry.scrollX, entry.scrollY);
+				updateDataObj(spr);
+				updateCurObjText();
+				break;
+			}
+		}
+	}
+
 	var _timePressed:Float = 0;
 	function onPress(event:KeyboardEvent) {
 		final eventKey:FlxKey = event.keyCode;
@@ -517,6 +561,8 @@ class StageEditorState extends MusicBeatState
 			_timePressed = 0;
 			if (FlxG.keys.pressed.CONTROL){
 				if (eventKey == FlxKey.S) dummSave();
+				else if (eventKey == FlxKey.Z && _undoStack.length > 0) applyUndoRedo(_undoStack.pop(), true);
+				else if (eventKey == FlxKey.Y && _redoStack.length > 0) applyUndoRedo(_redoStack.pop(), false);
 				return;
 			}else if (FlxG.keys.pressed.ALT){
 				if (eventKey == FlxKey.S){
@@ -637,7 +683,6 @@ class StageEditorState extends MusicBeatState
 					updateCurObjText();
 				}
 			}
-			trace(Std.string(eventKey));
 			return;
 		}
 		#end
@@ -679,7 +724,6 @@ class StageEditorState extends MusicBeatState
 			{
 				// ModsFolder.currentModFolder = infoShit.modFolder;
 				loadStage(infoShit.file);
-				trace('LOADED STAGE: ' + infoShit);
 				return;
 			}
 			if(file.endsWith('.json'))
@@ -718,7 +762,6 @@ class StageEditorState extends MusicBeatState
 						sprite.frames = Paths.getSparrowAtlas('${infoShit.file}');
 						sprite.tryExportAllAnimsFromXmlFlxSprite();
 						animated = true;
-						trace('ADDED SPRISHEET IMAGE: ' + infoShit);
 					}
 					catch(e)
 					{
@@ -728,7 +771,6 @@ class StageEditorState extends MusicBeatState
 				else
 				{
 					sprite.loadGraphic(graphic);
-					trace('ADDED IMAGE: ' + infoShit);
 				}
 				// god damn, why flxmouse stopped on focus off
 				sprite.screenCenter();
@@ -739,7 +781,6 @@ class StageEditorState extends MusicBeatState
 				final data = layersMap.get(sprite);
 				data.order = layers.length;
 				final programPath = Sys.programPath();
-				trace(programPath);
 				data.image = (infoShit.path.startsWith(programPath) ? infoShit.path.substr(programPath.length) : infoShit.path);
 				data.tag = Path.withoutDirectory(Path.withoutExtension(data.image)); // may stupid
 				if (animated){
@@ -956,7 +997,10 @@ class StageEditorState extends MusicBeatState
 				{
 					curObject = null;
 					checkOverlapLayers();
-					if (curObject != null) fixPos(curObject);
+					if (curObject != null) {
+						fixPos(curObject);
+						pushUndo();
+					}
 					updateTextInfoToCurData();
 				}
 				if (curObject != null && (!finded || (justReleased/* && FlxG.game.ticks - FlxG.mouse.justPressedTimeInTicks > FlxG.updateFramerate / 25*/))){
@@ -1143,7 +1187,6 @@ class StageEditorState extends MusicBeatState
 
 		gf.scrollFactor.set(0.95, 0.95);
 
-		trace('Load Stage Scripts.');
 		// STAGE SCRIPTS
 		loadScript('stages/' + curStage);
 
@@ -1347,7 +1390,6 @@ class StageEditorState extends MusicBeatState
 			if (ignoreCheck || script.getBool('luaDebugMode'))	{
 				if (deprecated && !script.getBool('luaDeprecatedWarnings')) return;
 				addTextToDebug(text, color);
-				trace(text);
 			}
 		}
 
@@ -1621,9 +1663,13 @@ class StageEditorState extends MusicBeatState
 	function saveLua()
 	{
 		final charactersDatas = [for (i in charactersList) if (i != null && layersMap.exists(i)) layersMap.get(i)];
-		final dadData = layersMap.get(dad);
-		final gfData = layersMap.get(gf);
-		final boyfriendData = layersMap.get(boyfriend);
+		final dadData = dad != null ? layersMap.get(dad) : null;
+		final gfData = gf != null ? layersMap.get(gf) : null;
+		final boyfriendData = boyfriend != null ? layersMap.get(boyfriend) : null;
+		final minCharOrder:Float = Math.min(
+			dadData != null ? dadData.order : 999,
+			Math.min(gfData != null ? gfData.order : 999, boyfriendData != null ? boyfriendData.order : 999)
+		);
 		var objectsData:Array<SpriteData> = [for (_ => i in layersMap) i];
 		var objectsNames:Array<String> = [];
 		for (i in objectsData){
@@ -1685,8 +1731,8 @@ class StageEditorState extends MusicBeatState
 			if (dataObject.alpha != 1)
 				data += '\tsetProperty(\'${dataObject.tag}.alpha\', ${dataObject.alpha})\r';
 
-			// if (dataObject.color != null && dataObject.color % 0x00ffffff != 0xffffff)
-			// 	data += '\tsetProperty(\'${dataObject.tag}.color\', FlxColor(\'#${dataObject.color.toHexString(true, false)}\'))\r';
+			if (dataObject.color != null && dataObject.color != 0xFFFFFFFF)
+				data += '\tsetProperty(\'${dataObject.tag}.color\', getColorFromHex(\'${dataObject.color.toHexString(true, false)}\'))\r';
 
 			if (dataObject.noAntialiasing)
 				data += '\tsetProperty(\'${dataObject.tag}.antialiasing\', false)\r';
@@ -1708,7 +1754,7 @@ class StageEditorState extends MusicBeatState
 					data += '\tscaleObject(${toArgumetsString([dataObject.tag, dataObject.scaleX, dataObject.scaleY])}, false)\r';
 
 			if (isChar) continue;
-			data += '\taddLuaSprite(${toArgumetsString([dataObject.tag, dataObject.order > Math.min(dadData.order, Math.min(gfData.order, boyfriendData.order))])})\r';
+			data += '\taddLuaSprite(${toArgumetsString([dataObject.tag, dataObject.order > minCharOrder])})\r';
 			data += '\r';
 		}
 
@@ -1736,24 +1782,55 @@ class StageEditorState extends MusicBeatState
 		*/
 	}
 	function dummSave() {
-		final dadData = layersMap.get(dad);
-		final gfData = layersMap.get(gf);
-		final boyfriendData = layersMap.get(boyfriend);
+		final dadData = dad != null ? layersMap.get(dad) : null;
+		final gfData = gf != null ? layersMap.get(gf) : null;
+		final boyfriendData = boyfriend != null ? layersMap.get(boyfriend) : null;
+
+		var spritesArray:Array<Dynamic> = [];
+		var objectsData:Array<SpriteData> = [for (_ => i in layersMap) i];
+		objectsData.sort((a, b) -> return a.order > b.order ? 1 : -1);
+		for (dataObj in objectsData) {
+			if (dataObj.tag == null || dataObj.tag.length == 0) continue;
+			if (['gfGroup', 'boyfriendGroup', 'dadGroup'].contains(dataObj.tag)) continue;
+			var spriteEntry:Dynamic = {
+				tag: dataObj.tag,
+				image: dataObj.image,
+				x: dataObj.x,
+				y: dataObj.y,
+				scaleX: dataObj.scaleX,
+				scaleY: dataObj.scaleY,
+				scrollFactorX: dataObj.scrollFactorX,
+				scrollFactorY: dataObj.scrollFactorY,
+				alpha: dataObj.alpha,
+				order: dataObj.order
+			};
+			if (dataObj.noAntialiasing) spriteEntry.noAntialiasing = true;
+			if (dataObj.invisible) spriteEntry.invisible = true;
+			if (dataObj.color != null && dataObj.color != 0xFFFFFFFF) spriteEntry.color = dataObj.color.toHexString(true, false);
+			if (dataObj.animations != null && dataObj.animations.length > 0) {
+				spriteEntry.animations = dataObj.animations;
+				if (dataObj.curAnim != null) spriteEntry.curAnim = dataObj.curAnim;
+			}
+			spritesArray.push(spriteEntry);
+		}
+
 		final data = Json.stringify({
 			directory: "",
 			defaultZoom: defaultCamZoom,
-			isPixelStage: false,
+			isPixelStage: isPixelStage,
 			typeNotes: 'fnf',
 
-			boyfriend: [boyfriendData.x, boyfriendData.y],
-			girlfriend: [gfData.x, gfData.y],
-			opponent: [dadData.x, dadData.y],
-			hide_girlfriend: false,
+			boyfriend: boyfriendData != null ? [boyfriendData.x, boyfriendData.y] : [770, 100],
+			girlfriend: gfData != null ? [gfData.x, gfData.y] : [400, 130],
+			opponent: dadData != null ? [dadData.x, dadData.y] : [100, 100],
+			hide_girlfriend: gf != null ? !gf.visible : false,
 
-			camera_boyfriend: [0, 0],
-			camera_opponent: [0, 0],
-			camera_girlfriend: [0, 0],
-			camera_speed: 1
+			camera_boyfriend: stageData.camera_boyfriend ?? [0, 0],
+			camera_opponent: stageData.camera_opponent ?? [0, 0],
+			camera_girlfriend: stageData.camera_girlfriend ?? [0, 0],
+			camera_speed: stageData.camera_speed ?? 1,
+
+			sprites: spritesArray
 		}, "\t");
 
 		if (data.length <= 0) return;
