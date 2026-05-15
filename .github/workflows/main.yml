@@ -36,7 +36,7 @@ jobs:
           haxelib install flixel-addons 3.2.3 --skip-dependencies
           haxelib install flixel-ui 2.6.1 --skip-dependencies
           haxelib install thx.semver --skip-dependencies
-          haxelib install hxvlc 2.0.1 --skip-dependencies
+          haxelib install hxvlc 2.1.4 --skip-dependencies
           haxelib install haxeui-openfl 1.7.0 --skip-dependencies
           haxelib git flxanimate https://github.com/Redar13/flxanimate dev --skip-dependencies
           haxelib git hscript-improved https://github.com/Redar13/hscript-improved polymod-scripted-classes --skip-dependencies
