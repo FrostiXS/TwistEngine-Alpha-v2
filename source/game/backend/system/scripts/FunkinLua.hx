@@ -2068,7 +2068,9 @@ class FunkinLua implements IScript
 		if (PlayState.instance != null) initPlayState();
 
 
+		#if hscript
 		initHaxeModule();
+		#end
 
 		addCallback("openCustomSubstate",  CustomSubstate.openCustomSubstate);
 		addCallback("closeCustomSubstate", CustomSubstate.closeCustomSubstate);
