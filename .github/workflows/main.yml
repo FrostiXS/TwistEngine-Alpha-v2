@@ -43,50 +43,23 @@ jobs:
           haxelib git linc_luajit https://github.com/superpowers04/linc_luajit --skip-dependencies
           haxelib install hxdiscord_rpc --skip-dependencies
 
-      - name: Patch source compatibility
-        shell: pwsh
-        run: |
-          $videoSprite = 'source/game/objects/VideoSprite.hx'
-          (Get-Content $videoSprite -Raw).
-            Replace('import hxvlc.externs.Types;', 'import hxvlc.externs.LibVLC;').
-            Replace('hxvlc.externs.Types.LibVLC_Media_Player_Role_T.LibVLC_Role_Game', 'LibVLC_Media_Player_Role_T.LibVLC_Role_Game') |
-            Set-Content $videoSprite -NoNewline
-
-          $loadingState = 'source/game/states/LoadingState.hx'
-          (Get-Content $loadingState -Raw).
-            Replace('import hxvlc.externs.Types;', 'import hxvlc.externs.LibVLC;') |
-            Set-Content $loadingState -NoNewline
-
-          $funkinLua = 'source/game/backend/system/scripts/FunkinLua.hx'
-          (Get-Content $funkinLua -Raw).
-            Replace("`t#if hscript`r`n`tpublic var hscript:HScriptLua = null;`r`n`tpublic var callbacks:Map<String, Dynamic> = new Map<String, Dynamic>();`r`n`tpublic static var customFunctions:Map<String, Dynamic> = new Map<String, Dynamic>();`r`n`t#end",
-                    "`t#if hscript`r`n`tpublic var hscript:HScriptLua = null;`r`n`t#end`r`n`t#if LUA_ALLOWED`r`n`tpublic var callbacks:Map<String, Dynamic> = new Map<String, Dynamic>();`r`n`tpublic static var customFunctions:Map<String, Dynamic> = new Map<String, Dynamic>();`r`n`t#end") |
-            Set-Content $funkinLua -NoNewline
-
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
 
       - name: Compile
         shell: cmd
-        run: |
-          if "${{ github.event_name }}"=="release" (
-            haxelib run lime build windows -D RELEASE_BUILD
-          ) else (
-            haxelib run lime build windows
-          )
+        run: haxelib run lime build windows
 
       - name: Publish Artifact
         uses: actions/upload-artifact@v4
         with:
           name: TwistEngine_${{github.run_id}}_Windows
-          path: |
-            export/dev/windows/bin
-            export/release/windows/bin
+          path: export/dev/windows/bin
 
       - name: Zip Release Build
         if: github.event_name == 'release'
         shell: pwsh
-        run: Compress-Archive -Path export/release/windows/bin/* -DestinationPath TwistEngine-Windows.zip
+        run: Compress-Archive -Path export/dev/windows/bin/* -DestinationPath TwistEngine-Windows.zip
 
       - name: Upload to Release
         if: github.event_name == 'release'
