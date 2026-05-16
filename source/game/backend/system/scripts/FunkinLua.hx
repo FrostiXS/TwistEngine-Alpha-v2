@@ -244,7 +244,9 @@ class FunkinLua implements IScript
 		set('buildTarget', 'unknown');
 		#end
 
+		#if hscript
 		for (name => func in customFunctions) if(func != null) addCallback(name, func);
+		#end
 
 		// shader shit
 		addCallback("initLuaShader", function(name:String, glslVersion:Int = 120, customName:String = '') {
@@ -2519,7 +2521,7 @@ class FunkinLua implements IScript
 	}
 
 	inline public function addLocalCallback(name:String, myFunction:Dynamic){
-		#if LUA_ALLOWED
+		#if (LUA_ALLOWED && hscript)
 		callbacks.set(name, myFunction);
 		addCallback(name, null); //just so that it gets called
 		#end
