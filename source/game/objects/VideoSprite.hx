@@ -10,7 +10,7 @@ import haxe.Int64;
 import haxe.io.Bytes;
 import haxe.io.Path;
 
-import hxvlc.externs.Types;
+import hxvlc.externs.LibVLC_Media_Player_Role_T;
 import hxvlc.openfl.Video;
 import hxvlc.util.Location;
 #if (hxvlc >= version("2.1.0"))
@@ -78,7 +78,7 @@ class VideoSprite extends FlxSprite // #if (hxvlc < version("1.9.0")) implements
 			if (bitmap == null)
 				return;
 
-			bitmap.role = hxvlc.externs.Types.LibVLC_Media_Player_Role_T.LibVLC_Role_Game;
+			bitmap.role = LibVLC_Media_Player_Role_T.LibVLC_Role_Game;
 			#if FLX_SOUND_SYSTEM
 			#if (flixel >= "5.9.0")
 			if (!FlxG.sound.onVolumeChange.has(onVolumeChange))

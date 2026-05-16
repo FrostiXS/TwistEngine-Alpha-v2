@@ -33,7 +33,7 @@ import sys.thread.Lock;
 
 #if VIDEOS_ALLOWED
 import game.objects.VideoSprite;
-import hxvlc.externs.Types;
+import hxvlc.externs.LibVLC_Media_Player_Role_T;
 import hxvlc.flixel.FlxInternalVideo;
 import hxvlc.openfl.Video;
 #end
