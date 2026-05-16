@@ -172,7 +172,7 @@ class CharacterEditorState extends MusicBeatUIState
 			leHealthIcon.baseScale = FlxG.mouse.pressed ? 0.95 : 1.1;
 		},
 		function(_):Void {
-			leHealthIcon.isPlayer = !leHealthIcon.isPlayer;
+			@:privateAccess leHealthIcon.isPlayer = !leHealthIcon.isPlayer;
 			leHealthIcon.baseScale = FlxG.mouse.pressed ? 0.95 : 1.1;
 		},
 		function(_):Void
