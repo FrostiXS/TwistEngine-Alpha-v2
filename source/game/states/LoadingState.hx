@@ -33,7 +33,6 @@ import sys.thread.Lock;
 
 #if VIDEOS_ALLOWED
 import game.objects.VideoSprite;
-import hxvlc.externs.LibVLC_Media_Player_Role_T;
 import hxvlc.flixel.FlxInternalVideo;
 import hxvlc.openfl.Video;
 #end
@@ -336,8 +335,7 @@ class LoadingState extends MusicBeatSubstate
 						return;
 					}
 					video.onOpening.add(() -> {
-						if (video != null)
-							video.role = LibVLC_Role_Game;
+						// role hint removed: LibVLC_Media_Player_Role_T not available in all hxvlc versions
 					});
 					video.onFormatSetup.add(videoCallback);
 					video.onEncounteredError.add(err -> {
