@@ -145,9 +145,9 @@ class FunkinLua implements IScript
 	public static var mainState(get, never):flixel.FlxState;
 	public static dynamic function get_mainState():flixel.FlxState return PlayState.instance;
 
+	public var callbacks:Map<String, Dynamic> = new Map<String, Dynamic>();
 	#if hscript
 	public var hscript:HScriptLua = null;
-	public var callbacks:Map<String, Dynamic> = new Map<String, Dynamic>();
 	public static var customFunctions:Map<String, Dynamic> = new Map<String, Dynamic>();
 	#end
 
@@ -244,7 +244,9 @@ class FunkinLua implements IScript
 		set('buildTarget', 'unknown');
 		#end
 
+		#if hscript
 		for (name => func in customFunctions) if(func != null) addCallback(name, func);
+		#end
 
 		// shader shit
 		addCallback("initLuaShader", function(name:String, glslVersion:Int = 120, customName:String = '') {
@@ -2066,7 +2068,9 @@ class FunkinLua implements IScript
 		if (PlayState.instance != null) initPlayState();
 
 
+		#if hscript
 		initHaxeModule();
+		#end
 
 		addCallback("openCustomSubstate",  CustomSubstate.openCustomSubstate);
 		addCallback("closeCustomSubstate", CustomSubstate.closeCustomSubstate);
@@ -3015,8 +3019,8 @@ class FunkinLua implements IScript
 			Lua.close(lua);
 			lua = null;
 		}
-		callbacks.clear();
 		#if hscript
+		callbacks.clear();
 		hscript?.dispose();
 		hscript = null;
 		#end

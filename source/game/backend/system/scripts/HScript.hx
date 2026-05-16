@@ -61,7 +61,9 @@ class HScript implements IScript implements flixel.util.FlxDestroyUtil.IFlxDestr
 			for (script in PlayState.instance.luaArray)
 				if (script != null && script.lua != null && !script.closed)
 					llua.Lua.Lua_helper.add_callback(script.lua, name, func);
+			#if hscript
 			FunkinLua.customFunctions.set(name, func);
+			#end
 			#end
 		});
 		return this;
