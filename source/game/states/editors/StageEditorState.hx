@@ -1820,14 +1820,14 @@ class StageEditorState extends MusicBeatState
 			isPixelStage: isPixelStage,
 			typeNotes: 'fnf',
 
-			boyfriend: boyfriendData != null ? [boyfriendData.x, boyfriendData.y] : [770, 100],
-			girlfriend: gfData != null ? [gfData.x, gfData.y] : [400, 130],
-			opponent: dadData != null ? [dadData.x, dadData.y] : [100, 100],
+			boyfriend: boyfriendData != null ? [boyfriendData.x, boyfriendData.y] : [770.0, 100.0],
+			girlfriend: gfData != null ? [gfData.x, gfData.y] : [400.0, 130.0],
+			opponent: dadData != null ? [dadData.x, dadData.y] : [100.0, 100.0],
 			hide_girlfriend: gf != null ? !gf.visible : false,
 
-			camera_boyfriend: stageData.camera_boyfriend ?? [0, 0],
-			camera_opponent: stageData.camera_opponent ?? [0, 0],
-			camera_girlfriend: stageData.camera_girlfriend ?? [0, 0],
+			camera_boyfriend: stageData.camera_boyfriend ?? [0.0, 0.0],
+			camera_opponent: stageData.camera_opponent ?? [0.0, 0.0],
+			camera_girlfriend: stageData.camera_girlfriend ?? [0.0, 0.0],
 			camera_speed: stageData.camera_speed ?? 1,
 
 			sprites: spritesArray
