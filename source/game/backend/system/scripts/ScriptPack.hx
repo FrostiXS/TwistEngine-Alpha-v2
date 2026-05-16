@@ -141,7 +141,9 @@ class ScriptPackPlayState extends ScriptPack
 			lua.call('onDestroy', []);
 			lua.stop();
 		}
+		#if hscript
 		FunkinLua.customFunctions.clear();
+		#end
 		modchartTweens.clear();
 		modchartTimers.clear();
 		modchartSprites.clear();
