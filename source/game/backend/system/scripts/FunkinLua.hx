@@ -145,9 +145,9 @@ class FunkinLua implements IScript
 	public static var mainState(get, never):flixel.FlxState;
 	public static dynamic function get_mainState():flixel.FlxState return PlayState.instance;
 
+	public var callbacks:Map<String, Dynamic> = new Map<String, Dynamic>();
 	#if hscript
 	public var hscript:HScriptLua = null;
-	public var callbacks:Map<String, Dynamic> = new Map<String, Dynamic>();
 	public static var customFunctions:Map<String, Dynamic> = new Map<String, Dynamic>();
 	#end
 
@@ -2523,7 +2523,7 @@ class FunkinLua implements IScript
 	}
 
 	inline public function addLocalCallback(name:String, myFunction:Dynamic){
-		#if (LUA_ALLOWED && hscript)
+		#if LUA_ALLOWED
 		callbacks.set(name, myFunction);
 		addCallback(name, null); //just so that it gets called
 		#end
