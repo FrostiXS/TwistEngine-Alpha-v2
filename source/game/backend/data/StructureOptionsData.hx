@@ -675,6 +675,12 @@ class StructureOptionsData
 				onChange: ClientPrefs.reloadControls,
 				changeInGameplay: true,
 			},
+			{
+				display: "DEBUG CONSOLE",
+				variableName: "debug_console",
+				onChange: ClientPrefs.reloadControls,
+				changeInGameplay: true,
+			},
 			#if DEV_BUILD
 			{
 				display: "DEBUG",
