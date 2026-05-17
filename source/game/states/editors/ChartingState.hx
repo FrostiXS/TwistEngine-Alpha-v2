@@ -231,6 +231,8 @@ class ChartingState extends MusicBeatUIState
 	var stagePreviewVisible:Bool = false;
 	var prevBeatHit:Int = -1;
 	var check_stagePreview:FlxUICheckBox;
+	var previewStageBg:FlxSprite;
+	var previewStageFront:FlxSprite;
 
 	public static var quantization:Int = 16;
 	public static var curQuant = 3;
@@ -1570,12 +1572,13 @@ class ChartingState extends MusicBeatUIState
 		tab_group_chart.add(bfPressVolume);
 
 		check_stagePreview = new FlxUICheckBox(check_warnings.x + 120, check_warnings.y, null, null, "Stage Preview", 100, function(){
-			save.data.chart_stagePreview = check_stagePreview.checked;
+			ClientPrefs.data.chartStagePreview = check_stagePreview.checked;
 			stagePreviewVisible = check_stagePreview.checked;
 			if (stagePreviewGroup != null)
 				stagePreviewGroup.visible = stagePreviewVisible;
+			updateGridTransparency();
 		});
-		check_stagePreview.checked = save.data.chart_stagePreview ?? false;
+		check_stagePreview.checked = ClientPrefs.data.chartStagePreview;
 		tab_group_chart.add(check_stagePreview);
 
 		UI_box.addGroup(tab_group_chart);
@@ -2445,10 +2448,7 @@ class ChartingState extends MusicBeatUIState
 								// would be coolio
 								// playedSound[data] = true;
 							}
-
-							// lol
-							// data = note.noteData;
-							// if (note.mustPress != _song.notes[curSec].mustHitSection) data += 4;
+							triggerPreviewSingAnim(note.noteData, note.mustPress);
 						// }
 					}
 					note.alpha = 0.4;
@@ -2486,7 +2486,7 @@ class ChartingState extends MusicBeatUIState
 			rightIcon.scale.x = rightIcon.scale.y = rightIcon.baseScale * rightIcon.data.scale * .5;
 			leftIcon.updateOffsets();
 			rightIcon.updateOffsets();
-			// Stage preview: make characters dance on beat
+			// Stage preview: make characters dance on beat, but don't override sing animations
 			if (stagePreviewVisible)
 			{
 				final beatInt:Int = Math.floor(curDecBeat);
@@ -2494,8 +2494,10 @@ class ChartingState extends MusicBeatUIState
 				{
 					prevBeatHit = beatInt;
 					if (previewGF != null) previewGF.dance(true);
-					if (previewDad != null) previewDad.dance(true);
-					if (previewBF != null) previewBF.dance(true);
+					if (previewDad != null && (previewDad.animation.curAnim == null || previewDad.animation.curAnim.name.indexOf('sing') != 0))
+						previewDad.dance(true);
+					if (previewBF != null && (previewBF.animation.curAnim == null || previewBF.animation.curAnim.name.indexOf('sing') != 0))
+						previewBF.dance(true);
 				}
 			}
 
@@ -2706,46 +2708,76 @@ class ChartingState extends MusicBeatUIState
 
 	function initStagePreview()
 	{
-		save.data.chart_stagePreview ??= false;
-		stagePreviewVisible = save.data.chart_stagePreview;
+		stagePreviewVisible = ClientPrefs.data.chartStagePreview;
 		stagePreviewGroup.visible = stagePreviewVisible;
 
-		// Add stage background
-		var stageBg:FlxSprite = new FlxSprite(-400, -200);
-		try {
-			stageBg.loadGraphic(Paths.image('stageback'));
-		} catch(e) {
-			stageBg.makeGraphic(1280, 720, 0xFF666666);
-		}
-		stageBg.scrollFactor.set();
-		stageBg.setGraphicSize(FlxG.width, FlxG.height);
-		stageBg.updateHitbox();
-		stageBg.screenCenter();
-		stageBg.alpha = 0.3;
-		stagePreviewGroup.add(stageBg);
-
-		// Load characters
+		reloadStagePreviewBG();
 		reloadStagePreviewChars();
+		updateGridTransparency();
+	}
+
+	function reloadStagePreviewBG()
+	{
+		if (previewStageBg != null) { stagePreviewGroup.remove(previewStageBg); previewStageBg.destroy(); previewStageBg = null; }
+		if (previewStageFront != null) { stagePreviewGroup.remove(previewStageFront); previewStageFront.destroy(); previewStageFront = null; }
+
+		final stageFile = StageData.getStageFile(_song.stage ?? 'stage') ?? StageData.dummy();
+		final stageZoom:Float = stageFile.defaultZoom;
+		final scaleFactor:Float = stageZoom * 0.28;
+
+		final camCenterX:Float = 640.0;
+		final camCenterY:Float = 400.0;
+		final screenCenterX:Float = FlxG.width * 0.35;
+		final screenCenterY:Float = FlxG.height * 0.45;
+
+		previewStageBg = new FlxSprite();
+		try {
+			previewStageBg.loadGraphic(Paths.image('stageback'));
+			previewStageBg.scrollFactor.set();
+			previewStageBg.scale.set(scaleFactor, scaleFactor);
+			previewStageBg.updateHitbox();
+			previewStageBg.x = (-600 - camCenterX) * scaleFactor + screenCenterX;
+			previewStageBg.y = (-200 - camCenterY) * scaleFactor + screenCenterY;
+			previewStageBg.alpha = 0.5;
+			stagePreviewGroup.add(previewStageBg);
+		} catch(e) {
+			previewStageBg.makeGraphic(FlxG.width, FlxG.height, 0xFF444444);
+			previewStageBg.scrollFactor.set();
+			previewStageBg.screenCenter();
+			previewStageBg.alpha = 0.4;
+			stagePreviewGroup.add(previewStageBg);
+		}
+
+		previewStageFront = new FlxSprite();
+		try {
+			previewStageFront.loadGraphic(Paths.image('stagefront'));
+			previewStageFront.scrollFactor.set();
+			final frontScale:Float = scaleFactor * 1.1;
+			previewStageFront.scale.set(frontScale, frontScale);
+			previewStageFront.updateHitbox();
+			previewStageFront.x = (-650 - camCenterX) * scaleFactor + screenCenterX;
+			previewStageFront.y = (600 - camCenterY) * scaleFactor + screenCenterY;
+			previewStageFront.alpha = 0.5;
+			stagePreviewGroup.add(previewStageFront);
+		} catch(e) {}
 	}
 
 	function reloadStagePreviewChars()
 	{
 		if (stagePreviewGroup == null) return;
 
-		// Remove old characters
 		if (previewGF != null) { stagePreviewGroup.remove(previewGF); previewGF.destroy(); previewGF = null; }
 		if (previewDad != null) { stagePreviewGroup.remove(previewDad); previewDad.destroy(); previewDad = null; }
 		if (previewBF != null) { stagePreviewGroup.remove(previewBF); previewBF.destroy(); previewBF = null; }
 
-		// Get stage data for positions
 		final stageFile = StageData.getStageFile(_song.stage ?? 'stage') ?? StageData.dummy();
-		final screenW:Float = FlxG.width;
-		final screenH:Float = FlxG.height;
+		final stageZoom:Float = stageFile.defaultZoom;
+		final scaleFactor:Float = stageZoom * 0.28;
 
-		// Scale factor to fit stage coordinates into the screen
-		final scaleFactor:Float = 0.45;
-		final offsetX:Float = screenW * 0.25;
-		final offsetY:Float = screenH * 0.15;
+		final camCenterX:Float = 640.0;
+		final camCenterY:Float = 400.0;
+		final screenCenterX:Float = FlxG.width * 0.35;
+		final screenCenterY:Float = FlxG.height * 0.45;
 
 		// Create GF
 		try {
@@ -2753,11 +2785,9 @@ class ChartingState extends MusicBeatUIState
 			previewGF.scrollFactor.set();
 			previewGF.scale.set(scaleFactor, scaleFactor);
 			previewGF.updateHitbox();
-			previewGF.setPosition(
-				stageFile.girlfriend[0] * scaleFactor + offsetX,
-				stageFile.girlfriend[1] * scaleFactor + offsetY
-			);
-			previewGF.alpha = 0.4;
+			previewGF.x = (stageFile.girlfriend[0] - camCenterX) * scaleFactor + screenCenterX;
+			previewGF.y = (stageFile.girlfriend[1] - camCenterY) * scaleFactor + screenCenterY;
+			previewGF.alpha = 0.55;
 			previewGF.active = true;
 			if (!stageFile.hide_girlfriend)
 				stagePreviewGroup.add(previewGF);
@@ -2769,11 +2799,9 @@ class ChartingState extends MusicBeatUIState
 			previewDad.scrollFactor.set();
 			previewDad.scale.set(scaleFactor, scaleFactor);
 			previewDad.updateHitbox();
-			previewDad.setPosition(
-				stageFile.opponent[0] * scaleFactor + offsetX,
-				stageFile.opponent[1] * scaleFactor + offsetY
-			);
-			previewDad.alpha = 0.4;
+			previewDad.x = (stageFile.opponent[0] - camCenterX) * scaleFactor + screenCenterX;
+			previewDad.y = (stageFile.opponent[1] - camCenterY) * scaleFactor + screenCenterY;
+			previewDad.alpha = 0.55;
 			previewDad.active = true;
 			stagePreviewGroup.add(previewDad);
 		} catch(e) {}
@@ -2784,16 +2812,45 @@ class ChartingState extends MusicBeatUIState
 			previewBF.scrollFactor.set();
 			previewBF.scale.set(scaleFactor, scaleFactor);
 			previewBF.updateHitbox();
-			previewBF.setPosition(
-				stageFile.boyfriend[0] * scaleFactor + offsetX,
-				stageFile.boyfriend[1] * scaleFactor + offsetY
-			);
-			previewBF.alpha = 0.4;
+			previewBF.x = (stageFile.boyfriend[0] - camCenterX) * scaleFactor + screenCenterX;
+			previewBF.y = (stageFile.boyfriend[1] - camCenterY) * scaleFactor + screenCenterY;
+			previewBF.alpha = 0.55;
 			previewBF.active = true;
 			stagePreviewGroup.add(previewBF);
 		} catch(e) {}
 
 		stagePreviewGroup.visible = stagePreviewVisible;
+	}
+
+	function updateGridTransparency()
+	{
+		final gridAlpha:Float = stagePreviewVisible ? 0.6 : 1.0;
+		if (gridLayer != null)
+		{
+			gridLayer.forEachAlive(function(spr:FlxSprite) { spr.alpha = gridAlpha; });
+		}
+		if (blackLinesLayer != null)
+		{
+			blackLinesLayer.forEachAlive(function(spr:FlxSprite) { spr.alpha = gridAlpha; });
+		}
+	}
+
+	function triggerPreviewSingAnim(noteData:Int, isBFNote:Bool)
+	{
+		if (!stagePreviewVisible) return;
+		final singAnims:Array<String> = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'];
+		final animDir:Int = noteData % 4;
+		if (animDir < 0 || animDir >= singAnims.length) return;
+		final animName:String = singAnims[animDir];
+
+		if (isBFNote)
+		{
+			if (previewBF != null) previewBF.playAnim(animName, true);
+		}
+		else
+		{
+			if (previewDad != null) previewDad.playAnim(animName, true);
+		}
 	}
 
 	var waveformPrinted:Bool = true;

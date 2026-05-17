@@ -451,6 +451,11 @@ class StructureOptionsData
 					}
 				]
 			},
+			{
+				display: "STAGE PREVIEW",
+				variableName: "chartStagePreview",
+				description: 'Shows stage background and characters behind the note grid in Chart Editor. Characters animate on beat and sing when notes play. (Alpha feature)',
+			},
 		],
 		#end
 		"GRAPHICS" => [
