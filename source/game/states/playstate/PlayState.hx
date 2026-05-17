@@ -1260,17 +1260,11 @@ class PlayState extends MusicBeatState {
 						scoreTxt.borderSize = 1.25;
 						healthBarGroup.add(scoreTxt);
 
-						var timeBar = new Bar(0, 0, 'healthBar', () -> return songPercent, 0, 1);
-						timeBar.screenCenter(flixel.util.FlxAxes.X);
-						timeBar.y = (ClientPrefs.downScroll ? FlxG.height - 36 : 19);
-						timeBar.setColors(FlxColor.fromRGB(0, 180, 255), FlxColor.BLACK);
-						timeBar.scale.set(0.7, 0.7);
-						timeBar.updateHitbox();
-						timeBar.screenCenter(flixel.util.FlxAxes.X);
-						timeBarGroup.add(timeBar);
+						// The user requested to remove the broken timeBar
+						// So we completely skip creating it.
 
-						var timeTxt = new flixel.text.FlxText(0, timeBar.y - 3, FlxG.width, "", 18);
-						timeTxt.setFormat(Paths.font('defaultPsych/vcr.ttf'), 18, FlxColor.WHITE, CENTER);
+						var timeTxt = new flixel.text.FlxText(FlxG.width - 420, healthBar.y + 40, 400, "", 20);
+						timeTxt.setFormat(Paths.font('defaultPsych/vcr.ttf'), 20, FlxColor.WHITE, RIGHT);
 						timeTxt.borderStyle = OUTLINE;
 						timeTxt.borderColor = FlxColor.BLACK;
 						timeTxt.scrollFactor.set();
@@ -1302,10 +1296,28 @@ class PlayState extends MusicBeatState {
 								+ ' | Rating: ' + ratingName
 								+ (ratingName != '?' ? ' (' + Std.string(flixel.math.FlxMath.roundDecimal(ratingPercent * 100, 2)) + '%)' + (ratingFC != null ? ' - ' + ratingFC : '') : '');
 							scoreTxt.text = str;
+							
+							// Update song time
+							var timeStr = "";
+							if(inst != null && inst.length > 0) {
+								var totalSeconds = Math.floor(inst.length / 1000);
+								var curSeconds = Math.floor(Conductor.songPosition / 1000);
+								if(curSeconds < 0) curSeconds = 0;
+								if(curSeconds > totalSeconds) curSeconds = totalSeconds;
+								
+								var totalMins = Math.floor(totalSeconds / 60);
+								var totalSecs = totalSeconds % 60;
+								var curMins = Math.floor(curSeconds / 60);
+								var curSecs = curSeconds % 60;
+								
+								var totalSecStr = (totalSecs < 10) ? "0" + totalSecs : "" + totalSecs;
+								var curSecStr = (curSecs < 10) ? "0" + curSecs : "" + curSecs;
+								
+								timeStr = ' | $curMins:$curSecStr / $totalMins:$totalSecStr';
+							}
+							
+							timeTxt.text = SONG.song + timeStr;
 						};
-
-						// song name in time bar
-						timeTxt.text = SONG.song;
 				}
 			}
 			var result = callOnHScript('onUpdateHudPost');

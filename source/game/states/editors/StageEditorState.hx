@@ -1180,9 +1180,45 @@ class StageEditorState extends MusicBeatState
 		gf.setPosition(GF_X, GF_Y);
 		boyfriend.setPosition(BF_X, BF_Y);
 		dad.setPosition(DAD_X, DAD_Y);
-		addCharacter(gf);
-		addCharacter(dad);
-		addCharacter(boyfriend);
+
+		// Load objects from stage JSON (data-driven stages)
+		if (stageData.objects != null && stageData.objects.length > 0)
+		{
+			var list:Map<String, FlxSprite> = StageData.addObjectsToState(stageData.objects, !stageData.hide_girlfriend ? gf : null, dad, boyfriend, null, true);
+			// Add all objects to layers in correct order
+			for (data in stageData.objects)
+			{
+				switch (data.type : String)
+				{
+					case 'gf', 'gfGroup':
+						addCharacter(gf);
+					case 'dad', 'dadGroup':
+						addCharacter(dad);
+					case 'boyfriend', 'boyfriendGroup':
+						addCharacter(boyfriend);
+					default:
+						var name:String = data.name;
+						if (name != null && list.exists(name))
+						{
+							var spr = list.get(name);
+							addLayer(spr);
+							var layerData = layersMap.get(spr);
+							if (layerData != null)
+							{
+								layerData.tag = name;
+								layerData.image = data.image;
+							}
+						}
+				}
+			}
+		}
+		else
+		{
+			// Fallback: add characters in default order
+			addCharacter(gf);
+			addCharacter(dad);
+			addCharacter(boyfriend);
+		}
 		curStage = stage;
 
 		gf.scrollFactor.set(0.95, 0.95);

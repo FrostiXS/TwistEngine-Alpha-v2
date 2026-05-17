@@ -1,7 +1,7 @@
 {
 	"directory": "week6",
 	"defaultZoom": 1.05,
-	"stageUI": "pixel",
+	"isPixelStage": true,
 
 	"boyfriend": [970, 320],
 	"girlfriend": [580, 430],
@@ -13,19 +13,18 @@
 	"camera_girlfriend": [0, 0],
 	"camera_speed": 1,
 
-	"preload": {
-		"images/weeb/weebSky": 3,
-		"images/weeb/weebSchool": 3,
-		"images/weeb/weebStreet": 3,
-		"images/weeb/weebTrees": 3,
-		"images/weeb/weebTreesBack": 2,
-		"images/weeb/petals": 2,
-		"images/weeb/bgFreaks": 2
-	},
+	"objects": [
+		{"type": "sprite", "name": "bgSky", "image": "weeb/weebSky", "x": 0, "y": 0, "scroll": [0.1, 0.1], "scale": [6, 6], "color": "#FFFFFF", "antialiasing": false, "filters": 3},
+		{"type": "sprite", "name": "bgSchool", "image": "weeb/weebSchool", "x": -200, "y": 0, "scroll": [0.6, 0.9], "scale": [6, 6], "color": "#FFFFFF", "antialiasing": false, "filters": 3},
+		{"type": "sprite", "name": "bgStreet", "image": "weeb/weebStreet", "x": -200, "y": 0, "scroll": [0.95, 0.95], "scale": [6, 6], "color": "#FFFFFF", "antialiasing": false, "filters": 3},
+		{"type": "sprite", "name": "bgTreesBack", "image": "weeb/weebTreesBack", "x": -200, "y": 0, "scroll": [0.7, 0.9], "scale": [6, 6], "color": "#FFFFFF", "antialiasing": false, "filters": 2},
+		{"type": "sprite", "name": "bgTrees", "image": "weeb/weebTrees", "x": -200, "y": -20, "scroll": [0.85, 0.85], "scale": [6, 6], "color": "#FFFFFF", "antialiasing": false, "filters": 2},
+		{"type": "animatedSprite", "name": "bgFreaks", "image": "weeb/bgFreaks", "x": -200, "y": 190, "scroll": [0.9, 0.9], "scale": [6, 6], "color": "#FFFFFF", "antialiasing": false, "filters": 2, "animations": [{"anim": "idle", "name": "BG girls group", "fps": 24, "loop": true}], "firstAnimation": "idle"},
+		{"type": "gf"},
+		{"type": "dad"},
+		{"type": "boyfriend"},
+		{"type": "animatedSprite", "name": "bgPetals", "image": "weeb/petals", "x": -200, "y": -40, "scroll": [0.85, 0.85], "scale": [6, 6], "color": "#FFFFFF", "antialiasing": false, "filters": 2, "animations": [{"anim": "idle", "name": "PETdistribution", "fps": 24, "loop": true}], "firstAnimation": "idle"}
+	],
 
-	"_editorMeta": {
-		"dad": "senpai",
-		"boyfriend": "bf-pixel",
-		"gf": "gf-pixel"
-	}
+	"_editorMeta": {"dad": "senpai", "boyfriend": "bf-pixel", "gf": "gf-pixel"}
 }
