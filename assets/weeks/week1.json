@@ -1,0 +1,19 @@
+{
+	"songs": [
+		["tutorial", "gf", [129, 100, 200]],
+		["bopeebo", "dad", [129, 100, 200]],
+		["fresh", "dad", [129, 100, 200]],
+		["dadbattle", "dad", [129, 100, 200]]
+	],
+	"weekCharacters": ["dad", "bf", "gf"],
+	"weekBackground": "",
+	"weekBefore": "",
+	"storyName": "DADDY DEAREST",
+	"weekName": "week1",
+	"freeplayColor": [129, 100, 200],
+	"startUnlocked": true,
+	"hiddenUntilUnlocked": false,
+	"hideStoryMode": false,
+	"hideFreeplay": false,
+	"difficulties": "Easy, Normal, Hard"
+}

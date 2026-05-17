@@ -1,0 +1,18 @@
+{
+	"songs": [
+		["senpai", "senpai", [255, 170, 111]],
+		["roses", "senpai-angry", [255, 170, 111]],
+		["thorns", "spirit", [255, 170, 111]]
+	],
+	"weekCharacters": ["senpai", "bf-pixel", "gf-pixel"],
+	"weekBackground": "school",
+	"weekBefore": "week5",
+	"storyName": "hating simulator ft. moawling",
+	"weekName": "week6",
+	"freeplayColor": [255, 170, 111],
+	"startUnlocked": false,
+	"hiddenUntilUnlocked": false,
+	"hideStoryMode": false,
+	"hideFreeplay": false,
+	"difficulties": "Easy, Normal, Hard"
+}
