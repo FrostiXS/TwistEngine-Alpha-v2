@@ -159,6 +159,13 @@ class MainMenuState extends MusicBeatState {
 				MusicBeatState.switchState(new game.states.editors.MasterEditorMenu());
 			}
 			#end
+			#if MODS_ALLOWED
+			if (FlxG.keys.justPressed.M)
+			{
+				selectedSomethin = true;
+				MusicBeatState.switchState(new ModsMenuState());
+			}
+			#end
 		}
 
 		super.update(elapsed);
