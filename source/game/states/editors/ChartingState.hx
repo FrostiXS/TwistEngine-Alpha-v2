@@ -623,6 +623,38 @@ class ChartingState extends MusicBeatUIState
 		optimizeJsonBox = new FlxUICheckBox(saveEvents.x, saveEvents.y + 30, null, null, "Optimize JSON?", 55);
 		optimizeJsonBox.checked = true;
 
+		// --- New Song creation ---
+		var newSongNameInput = new FlxUIInputText(320, 200, 120, "", 8);
+		blockPressWhileTypingOn.push(newSongNameInput);
+
+		var newSongBpmStepper = new FlxUINumericStepper(320, 235, 1, 150, 1, 4000, 1);
+		blockPressWhileTypingOnStepper.push(newSongBpmStepper);
+
+		var newSongBtn:FlxButton = new FlxButton(320, 260, 'Create Song', function(){
+			var songName:String = newSongNameInput.text.trim();
+			if (songName.length < 1) return;
+			var songPath:String = Paths.formatToSongPath(songName);
+			#if sys
+			var root:String = #if MODS_ALLOWED
+				(ModsFolder.currentModFolderPath != null && ModsFolder.currentModFolderPath.length > 0)
+					? ModsFolder.currentModFolderPath : "assets";
+			#else "assets"; #end
+			var dataDir:String = root + "/data/" + songPath;
+			var songsDir:String = root + "/songs/" + songPath;
+			if (!sys.FileSystem.exists(dataDir)) sys.FileSystem.createDirectory(dataDir);
+			if (!sys.FileSystem.exists(songsDir)) sys.FileSystem.createDirectory(songsDir);
+			var templateSong:SwagSong = Song.getTemplateSong();
+			templateSong.song = songName;
+			templateSong.bpm = newSongBpmStepper.value;
+			var jsonData:String = haxe.Json.stringify({song: templateSong}, "\t");
+			sys.io.File.saveContent(dataDir + "/" + songPath + ".json", jsonData);
+			PlayState.SONG = new Song(templateSong);
+			MusicBeatState.resetState();
+			#end
+		});
+		newSongBtn.color = 0xFF00AA00;
+		newSongBtn.label.color = FlxColor.WHITE;
+
 		var clear_events:FlxButton = new FlxButton(320, 310, 'Clear events', function(){
 			openSubState(new Prompt('This action will clear current progress.\n\nProceed?', 0, clearEvents, null, ignoreWarnings));
 		});
@@ -755,6 +787,11 @@ class ChartingState extends MusicBeatUIState
 		tab_group_song.add(new FlxStaticText(stageDropDown.x, stageDropDown.y - 15, 0, 'Stage:'));
 		// tab_group_song.add(new FlxStaticText(noteSkinInputText.x, noteSkinInputText.y - 15, 0, 'Note Texture:'));
 		// tab_group_song.add(new FlxStaticText(noteSplashesInputText.x, noteSplashesInputText.y - 15, 0, 'Note Splashes Texture:'));
+		tab_group_song.add(new FlxStaticText(newSongNameInput.x, newSongNameInput.y - 15, 0, 'New Song Name:'));
+		tab_group_song.add(newSongNameInput);
+		tab_group_song.add(new FlxStaticText(newSongBpmStepper.x, newSongBpmStepper.y - 15, 0, 'New Song BPM:'));
+		tab_group_song.add(newSongBpmStepper);
+		tab_group_song.add(newSongBtn);
 		tab_group_song.add(player2DropDown);
 		tab_group_song.add(gfVersionDropDown);
 		tab_group_song.add(player1DropDown);
