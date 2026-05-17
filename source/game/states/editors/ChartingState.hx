@@ -2764,12 +2764,12 @@ class ChartingState extends MusicBeatUIState
 
 		final stageFile = StageData.getStageFile(_song.stage ?? 'stage') ?? StageData.dummy();
 		final stageZoom:Float = stageFile.defaultZoom;
-		final scaleFactor:Float = stageZoom * 0.28;
+		final scaleFactor:Float = stageZoom * 0.55;
 
 		final camCenterX:Float = 640.0;
-		final camCenterY:Float = 400.0;
-		final screenCenterX:Float = FlxG.width * 0.35;
-		final screenCenterY:Float = FlxG.height * 0.45;
+		final camCenterY:Float = 360.0;
+		final screenCenterX:Float = FlxG.width * 0.5;
+		final screenCenterY:Float = FlxG.height * 0.5;
 
 		previewStageBg = new FlxSprite();
 		try {
@@ -2813,12 +2813,12 @@ class ChartingState extends MusicBeatUIState
 
 		final stageFile = StageData.getStageFile(_song.stage ?? 'stage') ?? StageData.dummy();
 		final stageZoom:Float = stageFile.defaultZoom;
-		final scaleFactor:Float = stageZoom * 0.28;
+		final scaleFactor:Float = stageZoom * 0.55;
 
 		final camCenterX:Float = 640.0;
-		final camCenterY:Float = 400.0;
-		final screenCenterX:Float = FlxG.width * 0.35;
-		final screenCenterY:Float = FlxG.height * 0.45;
+		final camCenterY:Float = 360.0;
+		final screenCenterX:Float = FlxG.width * 0.5;
+		final screenCenterY:Float = FlxG.height * 0.5;
 
 		// Create GF
 		try {
