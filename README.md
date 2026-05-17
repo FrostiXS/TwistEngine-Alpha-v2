@@ -5,10 +5,28 @@
 
 Engine originally used on [Friday Night Funkin' Colors Adventure](https://x.com/FNFCAdventure) mod.
 
-### Editor Improvements (v2)
-* **Stage Editor:** Fixed crash when saving with removed characters (Null Object Reference). Full JSON export now includes all sprite data (positions, scale, scroll factors, animations, colors). Lua export supports color properties. Added Undo/Redo (CTRL+Z / CTRL+Y). Removed WIP status from save functionality.
-* **Character Editor:** Enabled positioning silhouettes (toggle with G key) for easier character placement. Fixed health icon mouse interaction (click to flip player side). Cleaned up debug output.
-* **Chart Editor:** Added Stage Preview — see characters and stage behind the note grid with beat-synced animations (toggle in Charting tab). Cleaned up debug trace calls for cleaner console output.
+### What's New in v2 (Fixed & Improved)
+
+**For full documentation, see [DOCUMENTATION.md](DOCUMENTATION.md)**
+
+#### Editor Improvements
+* **Stage Editor:** Fixed crash when saving with removed characters. Full JSON export. Undo/Redo (CTRL+Z / CTRL+Y).
+* **Character Editor:** Silhouettes toggle (G key). Fixed health icon mouse interaction.
+* **Chart Editor:** Stage Preview with background, character animations on beat and note hits. Semi-transparent grid when preview enabled. New Song creation UI (no more manual folder creation).
+
+#### New Features
+* **Mods Manager** — Browse, enable, and switch mods from main menu (press M).
+* **Week Editor** — Create and edit Story Mode weeks with song lists, characters, and settings.
+* **New Song Creation** — Built-in dialog in Chart Editor: enter name + BPM, click Create.
+* **Split Vocals** — Supports Voices-bf.ogg / Voices-dad.ogg in addition to standard naming.
+* **Stage Preview (Alpha)** — Characters dance on beat and sing when notes play, positioned from Stage Editor data.
+* **Week Configurations** — Pre-configured Weeks 1-7 (copy song assets from Psych Engine to use).
+
+#### Bug Fixes
+* Fixed 10+ compilation errors in original codebase (hscript blocks, hxvlc compatibility, etc.)
+* Fixed mods loading in Freeplay (removed hardcoded mod reference)
+* Fixed Stage Editor null reference crashes
+* CI/CD pipeline — automated Windows builds on every release
 
 ### Supported platforms:
 |        Windows       |        Linux        | Mac | Html  |   HashLink  |      Android      |

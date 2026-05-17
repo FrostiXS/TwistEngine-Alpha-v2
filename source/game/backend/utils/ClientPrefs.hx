@@ -204,6 +204,7 @@ class ClientPrefs
 	}
 	public var displErrs:Bool = true;
 	public var displErrsWindow:Bool = false;
+	public var chartStagePreview:Bool = false;
 	public var strumsNotesOverlap:Bool = false;
 	public var autoPause(default, set):Bool = true;
 	inline function set_autoPause(a)

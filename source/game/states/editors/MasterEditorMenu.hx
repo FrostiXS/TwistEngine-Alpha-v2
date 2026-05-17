@@ -18,6 +18,7 @@ class MasterEditorMenu extends MusicBeatState
 		'Character Editor',
 		'UI Test State',
 		'Stage Editor',
+		'Week Editor',
 		'Mods Songs'
 	];
 	private var grpTexts:FlxTypedGroup<Alphabet>;
@@ -141,6 +142,8 @@ class MasterEditorMenu extends MusicBeatState
 					LoadingState.loadAndSwitchState(new ChartingState(), false);
 				case 'Stage Editor':
 					LoadingState.loadAndSwitchState(new StageEditorState({stage: 'stage', bf: 'bf', dad: 'dad', gf: 'gf'}), false);
+				case 'Week Editor':
+					MusicBeatState.switchState(new WeekEditorState());
 				case 'Mods Songs':
 					LoadingState.loadAndSwitchState(new SongsState(), false);
 				case 'UI Test State':

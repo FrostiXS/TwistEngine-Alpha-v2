@@ -62,15 +62,12 @@ class WeekData
 	{
 		weeksDatas.clear();
 		weeksListOrder.clearArray();
-		final lastMod = ModsFolder.currentModFolderPath;
 		var deJson:Dynamic = null;
 		for (file in AssetsPaths.getFolderContent("weeks", true))
 		{
-			trace(file);
 			if (PathUtil.extension(file) != 'json')
 				continue;
 
-			ModsFolder.switchMod("5rubles");
 			if (weeksDatas.exists(file))
 				continue;
 
@@ -87,11 +84,8 @@ class WeekData
 				continue;
 
 			weeksDatas.set(file, addWeek(deJson, file));
-			weeksListOrder.push(new WeekDataKey(file, "5rubles"));
+			weeksListOrder.push(new WeekDataKey(file, ModsFolder.currentModFolder));
 		}
-		trace(weeksDatas);
-		trace(weeksListOrder);
-		ModsFolder.switchMod(lastMod);
 	}
 	public static function convertDifficulties(source:haxe.extern.EitherType<String, Array<String>>):Array<String>
 	{

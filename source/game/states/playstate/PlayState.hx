@@ -1239,7 +1239,73 @@ class PlayState extends MusicBeatState {
 			{
 				switch(healthbarStyle)
 				{
-					default: // Add here your hud
+					default:
+						// Built-in default HUD (Psych Engine style)
+						var healthBar = new Bar(0, 0, 'healthBar', () -> return health, healthBounds.min, healthBounds.max);
+						healthBar.screenCenter(flixel.util.FlxAxes.X);
+						healthBar.y = FlxG.height * 0.89;
+						if (ClientPrefs.downScroll) healthBar.y = 0.11 * FlxG.height;
+						healthBar.smoothFactor = 0.5;
+						healthBarGroup.add(healthBar);
+
+						iconP1.y = healthBar.y - 75;
+						iconP2.y = healthBar.y - 75;
+						healthBarGroup.add(iconsGroup);
+
+						var scoreTxt = new flixel.text.FlxText(0, healthBar.y + 40, FlxG.width, "", 20);
+						scoreTxt.setFormat(Paths.font('defaultPsych/vcr.ttf'), 20, FlxColor.WHITE, CENTER);
+						scoreTxt.borderStyle = OUTLINE;
+						scoreTxt.borderColor = FlxColor.BLACK;
+						scoreTxt.scrollFactor.set();
+						scoreTxt.borderSize = 1.25;
+						healthBarGroup.add(scoreTxt);
+
+						var timeBar = new Bar(0, 0, 'healthBar', () -> return songPercent, 0, 1);
+						timeBar.screenCenter(flixel.util.FlxAxes.X);
+						timeBar.y = (ClientPrefs.downScroll ? FlxG.height - 36 : 19);
+						timeBar.setColors(FlxColor.fromRGB(0, 180, 255), FlxColor.BLACK);
+						timeBar.scale.set(0.7, 0.7);
+						timeBar.updateHitbox();
+						timeBar.screenCenter(flixel.util.FlxAxes.X);
+						timeBarGroup.add(timeBar);
+
+						var timeTxt = new flixel.text.FlxText(0, timeBar.y - 3, FlxG.width, "", 18);
+						timeTxt.setFormat(Paths.font('defaultPsych/vcr.ttf'), 18, FlxColor.WHITE, CENTER);
+						timeTxt.borderStyle = OUTLINE;
+						timeTxt.borderColor = FlxColor.BLACK;
+						timeTxt.scrollFactor.set();
+						timeTxt.borderSize = 1.25;
+						timeBarGroup.add(timeTxt);
+
+						healthBarGroup.visible = timeBarGroup.visible = !ClientPrefs.hideHud;
+
+						updateColorsInHealthBar = function(s) {
+							healthBar.setColors(dadColor, bfColor);
+						};
+
+						healthBarUpdate = function(elapsed:Float) {
+							var iconOffset:Int = 26;
+							iconP1.x = healthBar.x + (healthBar.width * (flixel.math.FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) + (150 * iconP1.scale.x - 150) / 2 - iconOffset;
+							iconP2.x = healthBar.x + (healthBar.width * (flixel.math.FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (150 * iconP2.scale.x) / 2 - iconOffset * 2;
+
+							var iconBop = 1 + 0.2 * Math.max(0, (iconP1.scale.x - baseScaleIcons));
+							iconP1.scale.set(flixel.math.FlxMath.lerp(baseScaleIcons, iconP1.scale.x, Math.exp(-elapsed * 9)), flixel.math.FlxMath.lerp(baseScaleIcons, iconP1.scale.y, Math.exp(-elapsed * 9)));
+							iconP2.scale.set(flixel.math.FlxMath.lerp(baseScaleIcons, iconP2.scale.x, Math.exp(-elapsed * 9)), flixel.math.FlxMath.lerp(baseScaleIcons, iconP2.scale.y, Math.exp(-elapsed * 9)));
+
+							iconP1.updateHitbox();
+							iconP2.updateHitbox();
+						};
+
+						updateScore = function(miss:Bool = false, ?start:Bool = false) {
+							var str:String = 'Score: ' + songScore
+								+ ' | Misses: ' + songMisses
+								+ ' | Rating: ' + ratingName
+								+ (ratingName != '?' ? ' (' + Std.string(flixel.math.FlxMath.roundDecimal(ratingPercent * 100, 2)) + '%)' + (ratingFC != null ? ' - ' + ratingFC : '') : '');
+							scoreTxt.text = str;
+						};
+
+						// song name in time bar
+						timeTxt.text = SONG.song;
 				}
 			}
 			var result = callOnHScript('onUpdateHudPost');
@@ -1768,8 +1834,12 @@ class PlayState extends MusicBeatState {
 				final singleVocals:openfl.media.Sound = Paths.voices(songData.song, 'Voices' + songData.postfix);
 				if (singleVocals == null)
 				{
-					vocals = EffectSound.load(Paths.voices(songData.song, 'Voices_Player' + songData.postfix));
-					vocalsDAD = EffectSound.load(Paths.voices(songData.song, 'Voices_Opponent' + songData.postfix));
+					var bfVox:openfl.media.Sound = Paths.voices(songData.song, 'Voices_Player' + songData.postfix);
+					var dadVox:openfl.media.Sound = Paths.voices(songData.song, 'Voices_Opponent' + songData.postfix);
+					if (bfVox == null) bfVox = Paths.voices(songData.song, 'Voices-bf' + songData.postfix);
+					if (dadVox == null) dadVox = Paths.voices(songData.song, 'Voices-dad' + songData.postfix);
+					vocals = EffectSound.load(bfVox);
+					vocalsDAD = EffectSound.load(dadVox);
 				}
 				else
 				{

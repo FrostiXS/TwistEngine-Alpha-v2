@@ -20,7 +20,7 @@ class MainMenuState extends MusicBeatState {
 	static var curSelected:Int = 0;
 
 	static final optionShit:Array<Array<EitherType<String, Void -> Class<MusicBeatState>>>> = [
-		['story_mode',  () -> return null],
+		['story_mode',  () -> return game.states.StoryMenuState],
 		['freeplay',    () -> return game.states.FreeplayState],
 		[
 			'options',
@@ -157,6 +157,13 @@ class MainMenuState extends MusicBeatState {
 			{
 				selectedSomethin = true;
 				MusicBeatState.switchState(new game.states.editors.MasterEditorMenu());
+			}
+			#end
+			#if MODS_ALLOWED
+			if (FlxG.keys.justPressed.M)
+			{
+				selectedSomethin = true;
+				MusicBeatState.switchState(new ModsMenuState());
 			}
 			#end
 		}
