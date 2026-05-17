@@ -1811,8 +1811,12 @@ class ChartingState extends MusicBeatUIState
 			final singleVocals:openfl.media.Sound = Paths.voices(songData.song, 'Voices' + songData.postfix);
 			if (singleVocals == null)
 			{
-				vocalBF.loadEmbedded(Paths.voices(songData.song, 'Voices_Player' + songData.postfix));
-				vocal.loadEmbedded(Paths.voices(songData.song, 'Voices_Opponent' + songData.postfix));
+				var bfVocals:openfl.media.Sound = Paths.voices(songData.song, 'Voices_Player' + songData.postfix);
+				var dadVocals:openfl.media.Sound = Paths.voices(songData.song, 'Voices_Opponent' + songData.postfix);
+				if (bfVocals == null) bfVocals = Paths.voices(songData.song, 'Voices-bf' + songData.postfix);
+				if (dadVocals == null) dadVocals = Paths.voices(songData.song, 'Voices-dad' + songData.postfix);
+				if (bfVocals != null) vocalBF.loadEmbedded(bfVocals);
+				if (dadVocals != null) vocal.loadEmbedded(dadVocals);
 			}
 			else
 			{
