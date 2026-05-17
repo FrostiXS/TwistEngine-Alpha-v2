@@ -344,6 +344,7 @@ class ClientPrefs
 
 		"debug_1"				=> [SEVEN],
 		"debug_2"				=> [EIGHT],
+		"debug_console"			=> [F2],
 
 		#if DEV_BUILD
 		"debug_skipSong"		=> [ONE],

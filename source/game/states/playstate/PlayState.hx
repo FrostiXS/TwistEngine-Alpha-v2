@@ -502,6 +502,8 @@ class PlayState extends MusicBeatState {
 		// if (Main.canClearMem) Paths.clearUnusedMemory();
 		Main.canClearMem = false;
 		trace('Start State.');
+		
+		add(new game.objects.ui.DebugConsole());
 		/*
 		subStateClosed.add(i -> {
 			if (paused)
@@ -1204,6 +1206,8 @@ class PlayState extends MusicBeatState {
 		newText.setPosition(10, 8 - newText.height);
 
 		luaDebugGroup.forEachAlive(spr -> spr.y += newText.height + 2);
+		
+		game.objects.ui.DebugConsole.log(text, color);
 	}
 
 	public var dadColor:FlxColor = FlxColor.RED;
