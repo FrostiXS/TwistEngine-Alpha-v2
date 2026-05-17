@@ -83,18 +83,13 @@ class FreeplayState extends MusicBeatState
 	var intendedScore:Int = 0;
 	var intendedMisses:Int = 0;
 	var intendedRating:Float = 0;
-	/*
-	var lerpScore:Float = 0;
+	
+	var lerpScore:Int = 0;
 	var lerpRating:Float = 0;
-	*/
-
-	var grpAlphabetDispl:FlxTypedGroup<Alphabet>;
-	var grpIconsDispl:FlxTypedGroup<HealthIcon>;
+	var scoreText:flixel.text.FlxText;
 
 	override function destroy()
 	{
-		grpAlphabetDispl.clear();
-		grpIconsDispl.clear();
 		threadActive = false;
 		super.destroy();
 	}
@@ -114,15 +109,16 @@ class FreeplayState extends MusicBeatState
 		FlxG.cameras.add(camHUD, false);
 
 		// optimize quad draws
-		add(grpAlphabetDispl = new FlxTypedGroup());
-		add(grpIconsDispl = new FlxTypedGroup());
 		add(grpSongs = new FlxGroup());
-		grpSongs.visible = false;
-		grpAlphabetDispl.active = grpIconsDispl.active = false;
+		grpSongs.visible = true;
+
+		scoreText = new flixel.text.FlxText(FlxG.width - 400, 20, 380, "", 32);
+		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT, flixel.text.FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		scoreText.cameras = [camHUD];
+		add(scoreText);
 
 		add(camFollow = new FlxObject(0, 0, 1, 1));
-		FlxG.camera.follow(camFollow);
-		FlxG.camera.targetOffset.set(FlxG.camera.viewWidth / 3 + 90, 320 - FlxG.camera.viewHeight / 2);
+		FlxG.camera.follow(camFollow, flixel.cameras.FlxCameraFollowStyle.LOCKON, 0.05);
 
 		// Thread.create(createSongs);
 		generateSongsList();
@@ -166,20 +162,27 @@ class FreeplayState extends MusicBeatState
 					group.alpha = 0.6;
 					group.ID = i;
 					group.moves = false;
-					songText = new Alphabet(90, 320, data.displaySongName ?? data.songName, true);
-					songText.ID = songText.targetY = i;
-					songText.scaleX = Math.min(1, 980 / songText.width);
-					songText.x = i * songText.distancePerItem.x + songText.startPosition.x;
-					songText.y = i * 1.3 * songText.distancePerItem.y + songText.startPosition.y;
+					
+					var cardBg = new FlxSprite(0, 0).makeGraphic(750, 140, FlxColor.WHITE);
+					cardBg.color = 0xFF000000;
+					cardBg.alpha = 0.5;
+					group.add(cardBg);
+
+					songText = new Alphabet(30, 20, data.displaySongName ?? data.songName, true);
+					songText.isMenuItem = false;
+					songText.scaleX = Math.min(0.8, 500 / songText.width);
+					songText.scaleY = songText.scaleX;
+					songText.x = 30;
+					songText.y = cardBg.height / 2 - songText.height / 2;
 					group.add(songText);
-					grpAlphabetDispl.add(songText);
+
 					if (data.healthIcon != null && data.healthIcon.trim().length > 0)
 					{
 						icon = new HealthIcon(data.healthIcon);
 						icon.ID = i;
 						icon.setScale(icon.baseScale * (icon.data == null ? 1 : icon.data.scale));
 						icon.updateHealth(50);
-						icon.setPosition(songText.x + songText.width + 10, songText.y - (icon.height - songText.height) / 2);
+						icon.setPosition(cardBg.width - 160, cardBg.height / 2 - icon.height / 2);
 						icon.updateOffsets();
 						iconArray.push(icon);
 						var _lastName:String = null;
@@ -190,14 +193,14 @@ class FreeplayState extends MusicBeatState
 							_lastName = name;
 						}
 						group.add(icon);
-						grpIconsDispl.add(icon);
-						// icon.ID = i;
-						// add(icon);
 					}
+					
+					group.x = 50;
+					group.y = i * 160 + 320;
+
 					i++;
 					songs.push(new SongMeta(data, key.modPack, weekData));
 					grpSongs.add(group);
-					// FlxTween.num(0, group.alpha, 0.2, {}, @:privateAccess group.set_alpha);
 				}
 				game.objects.game.HealthIcon.clearDatas();
 			}
@@ -281,9 +284,30 @@ class FreeplayState extends MusicBeatState
 		}
 
 		super.update(elapsed);
-		// for (icon in iconArray)
-		// 	// if (icon.isOnScreen())
-		// 		icon.updateOffsets();
+
+		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, Math.exp(-elapsed * 24)));
+		lerpRating = FlxMath.lerp(lerpRating, intendedRating, Math.exp(-elapsed * 24));
+		if (Math.abs(lerpScore - intendedScore) <= 10) lerpScore = intendedScore;
+		if (Math.abs(lerpRating - intendedRating) <= 0.01) lerpRating = intendedRating;
+
+		scoreText.text = 'PERSONAL BEST: ' + lerpScore + '\n' + 'RATING: ' + Std.int(lerpRating * 100) + '%';
+		
+		var i:Int = 0;
+		for (node in grpSongs.members)
+		{
+			var group:FlxSpriteGroup = cast node;
+			if (group == null) continue;
+			
+			var targetY = (i - curSelected) * 160 + (FlxG.height / 2 - 70);
+			var targetX = (i == curSelected) ? 120 : 50;
+			var targetAlpha = (i == curSelected) ? 1.0 : 0.6;
+			
+			group.y = FlxMath.lerp(group.y, targetY, Math.exp(-elapsed * 10));
+			group.x = FlxMath.lerp(group.x, targetX, Math.exp(-elapsed * 10));
+			group.alpha = FlxMath.lerp(group.alpha, targetAlpha, Math.exp(-elapsed * 10));
+			i++;
+		}
+		
 		forMouseClick = false;
 	}
 
@@ -358,8 +382,7 @@ class FreeplayState extends MusicBeatState
 						else
 							_bgTween = FlxTween.color(bgSpr, 0.5, bgSpr.color, intendedColor, {ease: FlxEase.cubeOut});
 					}
-					group.alpha = 1.;
-					camFollow.setPosition(group.members[0].x, group.members[0].y + group.members[0].height / 2);
+					camFollow.setPosition(0, FlxG.height / 2);
 					if (snap)
 						FlxG.camera.snapToTarget();
 				}
