@@ -1,7 +1,6 @@
 {
 	"directory": "week2",
 	"defaultZoom": 1.05,
-	"stageUI": "",
 
 	"boyfriend": [770, 100],
 	"girlfriend": [400, 130],
@@ -13,14 +12,13 @@
 	"camera_girlfriend": [0, 0],
 	"camera_speed": 1,
 
-	"preload": {
-		"images/halloween_bg": 2,
-		"images/halloween_bg_low": 1
-	},
+	"objects": [
+		{"type": "animatedSprite", "name": "halloweenBG", "image": "halloween_bg", "x": -200, "y": -100, "scroll": [1, 1], "scale": [1, 1], "color": "#FFFFFF", "filters": 2, "animations": [{"anim": "idle", "name": "halloweem bg0", "fps": 24, "loop": true}, {"anim": "lightning", "name": "halloweem bg lightning strike", "fps": 24, "loop": false}], "firstAnimation": "idle"},
+		{"type": "sprite", "name": "halloweenBGLow", "image": "halloween_bg_low", "x": -200, "y": -100, "scroll": [1, 1], "scale": [1, 1], "color": "#FFFFFF", "filters": 1},
+		{"type": "gf"},
+		{"type": "dad"},
+		{"type": "boyfriend"}
+	],
 
-	"_editorMeta": {
-		"dad": "spooky",
-		"boyfriend": "bf",
-		"gf": "gf"
-	}
+	"_editorMeta": {"dad": "spooky", "boyfriend": "bf", "gf": "gf"}
 }

@@ -1,7 +1,6 @@
 {
 	"directory": "week3",
 	"defaultZoom": 1.05,
-	"stageUI": "",
 
 	"boyfriend": [770, 100],
 	"girlfriend": [400, 130],
@@ -13,18 +12,17 @@
 	"camera_girlfriend": [0, 0],
 	"camera_speed": 1,
 
-	"preload": {
-		"images/philly/city": 3,
-		"images/philly/street": 3,
-		"images/philly/train": 3,
-		"images/philly/window": 3,
-		"images/philly/behindTrain": 2,
-		"images/philly/sky": 2
-	},
+	"objects": [
+		{"type": "sprite", "name": "sky", "image": "philly/sky", "x": -100, "y": 0, "scroll": [0.1, 0.1], "scale": [1, 1], "color": "#FFFFFF", "filters": 3},
+		{"type": "sprite", "name": "city", "image": "philly/city", "x": -10, "y": 0, "scroll": [0.3, 0.3], "scale": [0.85, 0.85], "color": "#FFFFFF", "filters": 3},
+		{"type": "sprite", "name": "window", "image": "philly/window", "x": -10, "y": 0, "scroll": [0.3, 0.3], "scale": [0.85, 0.85], "color": "#FFFFFF", "filters": 2},
+		{"type": "sprite", "name": "behindTrain", "image": "philly/behindTrain", "x": -650, "y": -400, "scroll": [0.7, 0.7], "scale": [1, 1], "color": "#FFFFFF", "filters": 2},
+		{"type": "sprite", "name": "train", "image": "philly/train", "x": 2000, "y": 360, "scroll": [1, 1], "scale": [1, 1], "color": "#FFFFFF", "filters": 2},
+		{"type": "sprite", "name": "street", "image": "philly/street", "x": -40, "y": 50, "scroll": [1, 1], "scale": [1, 1], "color": "#FFFFFF", "filters": 3},
+		{"type": "gf"},
+		{"type": "dad"},
+		{"type": "boyfriend"}
+	],
 
-	"_editorMeta": {
-		"dad": "pico",
-		"boyfriend": "bf",
-		"gf": "gf"
-	}
+	"_editorMeta": {"dad": "pico", "boyfriend": "bf", "gf": "gf"}
 }
