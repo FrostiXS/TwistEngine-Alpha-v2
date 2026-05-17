@@ -1296,7 +1296,7 @@ class PlayState extends MusicBeatState {
 							iconP2.updateHitbox();
 						};
 
-						updateScore = function(miss:Bool, start:Bool) {
+						updateScore = function(miss:Bool = false, ?start:Bool = false) {
 							var str:String = 'Score: ' + songScore
 								+ ' | Misses: ' + songMisses
 								+ ' | Rating: ' + ratingName
