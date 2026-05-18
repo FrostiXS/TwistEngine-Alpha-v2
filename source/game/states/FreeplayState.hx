@@ -125,7 +125,7 @@ class FreeplayState extends MusicBeatState
 		add(diffText);
 
 		add(camFollow = new FlxObject(0, 0, 1, 1));
-		FlxG.camera.follow(camFollow, flixel.cameras.FlxCameraFollowStyle.LOCKON, 0.05);
+		FlxG.camera.follow(camFollow, LOCKON, 0.05);
 
 		// Thread.create(createSongs);
 		generateSongsList();
