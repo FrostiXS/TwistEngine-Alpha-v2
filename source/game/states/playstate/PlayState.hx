@@ -1322,6 +1322,117 @@ class PlayState extends MusicBeatState {
 							
 							timeTxt.text = SONG.song + timeStr;
 						};
+
+						// Countdown sprites (3-2-1-GO)
+						spawnCountDownSprite = function(swagCounter:Int) {
+							var introAssets:Array<String> = isPixelStage
+								? ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel']
+								: ['ready', 'set', 'go'];
+							var introSounds:Array<String> = ['intro3', 'intro2', 'intro1', 'introGo'];
+
+							if (swagCounter < introSounds.length)
+								FlxG.sound.play(Paths.sound(introSounds[swagCounter] + introSoundsSuffix), 0.6);
+
+							if (swagCounter > 0 && swagCounter <= introAssets.length) {
+								var spr = new FlxSprite();
+								var graphic = Paths.image(introAssets[swagCounter - 1]);
+								if (graphic != null) {
+									spr.loadGraphic(graphic);
+									if (isPixelStage)
+										spr.setGraphicSize(Std.int(spr.width * daPixelZoom));
+									spr.updateHitbox();
+									spr.screenCenter();
+									spr.cameras = [camHUD];
+									add(spr);
+									FlxTween.tween(spr, {y: spr.y + 100, alpha: 0}, Conductor.crochet / 1000, {
+										ease: FlxEase.cubeInOut,
+										onComplete: function(twn:FlxTween) {
+											spr.destroy();
+										}
+									});
+								}
+							}
+						};
+
+						// Combo popup + rating sprites
+						popUpCombo = function(daRating:Rating) {
+							if (ClientPrefs.hideHud) return;
+							var pixelShitPart1:String = isPixelStage ? 'pixelUI/' : '';
+							var pixelShitPart2:String = isPixelStage ? '-pixel' : '';
+							var placement:Float = FlxG.width * 0.35;
+
+							// Rating sprite (SICK/GOOD/BAD/SHIT)
+							if (showRating) {
+								var rating = new FlxSprite();
+								var ratingGraphic = Paths.image(pixelShitPart1 + daRating.image + pixelShitPart2);
+								if (ratingGraphic != null) {
+									rating.loadGraphic(ratingGraphic);
+									rating.screenCenter();
+									rating.x = placement - 40;
+									rating.y -= 60;
+									rating.acceleration.y = 550;
+									rating.velocity.y -= FlxG.random.int(140, 175);
+									rating.velocity.x -= FlxG.random.int(0, 10);
+									if (!isPixelStage) {
+										rating.setGraphicSize(Std.int(rating.width * 0.7));
+									} else {
+										rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.85));
+									}
+									rating.updateHitbox();
+									rating.antialiasing = !isPixelStage;
+									rating.cameras = [camHUD];
+									add(rating);
+									FlxTween.tween(rating, {alpha: 0}, 0.2, {
+										startDelay: Conductor.crochet * 0.001,
+										onComplete: function(twn:FlxTween) {
+											rating.destroy();
+										}
+									});
+								}
+							}
+
+							// Combo number sprites
+							if (showComboNum && combo >= 10) {
+								var separatedScore:Array<Int> = [];
+								var tempCombo:Int = combo;
+								while (tempCombo >= 1) {
+									separatedScore.insert(0, tempCombo % 10);
+									tempCombo = Math.floor(tempCombo / 10);
+								}
+								while (separatedScore.length < 3) separatedScore.insert(0, 0);
+
+								var daLoop:Int = 0;
+								for (i in separatedScore) {
+									var numScore = new FlxSprite();
+									var numGraphic = Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2);
+									if (numGraphic != null) {
+										numScore.loadGraphic(numGraphic);
+										numScore.screenCenter();
+										numScore.x = placement + (43 * daLoop) - 90;
+										numScore.y += 80;
+										if (!isPixelStage) {
+											numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+										} else {
+											numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
+										}
+										numScore.updateHitbox();
+										numScore.antialiasing = !isPixelStage;
+										numScore.acceleration.y = FlxG.random.int(200, 300);
+										numScore.velocity.y -= FlxG.random.int(140, 160);
+										numScore.velocity.x = FlxG.random.float(-5, 5);
+										numScore.cameras = [camHUD];
+										add(numScore);
+										FlxTween.tween(numScore, {alpha: 0}, 0.2, {
+											startDelay: Conductor.crochet * 0.002,
+											onComplete: function(twn:FlxTween) {
+												numScore.destroy();
+											}
+										});
+									}
+									daLoop++;
+								}
+							}
+						};
 				}
 			}
 			var result = callOnHScript('onUpdateHudPost');
