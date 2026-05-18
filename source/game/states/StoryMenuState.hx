@@ -35,6 +35,8 @@ class StoryMenuState extends MusicBeatState
 		Paths.clearUnusedMemory();
 		PlayState.isStoryMode = true;
 
+		DiscordClient.changePresence("Story Mode", null);
+
 		WeekData.reloadWeeksFiles(true);
 
 		for (key in WeekData.weeksListOrder)
