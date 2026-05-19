@@ -7,6 +7,21 @@
 	"girlfriend": [200, 65],
 	"opponent": [20, 100],
 
+	"objects": [
+		{"type": "sprite", "name": "tankSky", "image": "tankSky", "x": -400, "y": -400, "scroll": [0, 0], "scale": [1, 1], "color": "#FFFFFF", "filters": 3},
+		{"type": "sprite", "name": "tankClouds", "image": "tankClouds", "x": -700, "y": -100, "scroll": [0.1, 0.1], "scale": [1, 1], "color": "#FFFFFF", "filters": 2},
+		{"type": "sprite", "name": "tankMountains", "image": "tankMountains", "x": -300, "y": -20, "scroll": [0.2, 0.2], "scale": [1, 1], "color": "#FFFFFF", "filters": 2},
+		{"type": "sprite", "name": "tankBuildings", "image": "tankBuildings", "x": -200, "y": 0, "scroll": [0.3, 0.3], "scale": [1, 1], "color": "#FFFFFF", "filters": 2},
+		{"type": "sprite", "name": "tankRuins", "image": "tankRuins", "x": -200, "y": 0, "scroll": [0.35, 0.35], "scale": [1, 1], "color": "#FFFFFF", "filters": 2},
+		{"type": "sprite", "name": "smokeLeft", "image": "smokeLeft", "x": -200, "y": -100, "scroll": [0.4, 0.4], "scale": [1, 1], "color": "#FFFFFF", "filters": 2},
+		{"type": "sprite", "name": "smokeRight", "image": "smokeRight", "x": 1100, "y": -100, "scroll": [0.4, 0.4], "scale": [1, 1], "color": "#FFFFFF", "filters": 2},
+		{"type": "sprite", "name": "tankWatchtower", "image": "tankWatchtower", "x": 100, "y": -150, "scroll": [0.5, 0.5], "scale": [1, 1], "color": "#FFFFFF", "filters": 2},
+		{"type": "sprite", "name": "tankGround", "image": "tankGround", "x": -420, "y": -150, "scroll": [1, 1], "scale": [1, 1], "color": "#FFFFFF", "filters": 3},
+		{"type": "gf"},
+		{"type": "dad"},
+		{"type": "boyfriend"}
+	],
+
 	"preload": {
 		"images/tank0": 3,
 		"images/tank1": 2,

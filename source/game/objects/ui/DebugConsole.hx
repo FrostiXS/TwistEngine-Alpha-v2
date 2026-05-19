@@ -83,8 +83,9 @@ class DebugConsole extends FlxSpriteGroup
 		if (instance != null && instance.isVisible)
 			instance.refreshDisplay();
 
-		// Also trace to stdout for debugging
+		#if debug
 		trace('[DebugConsole] $text');
+		#end
 	}
 
 	/**
