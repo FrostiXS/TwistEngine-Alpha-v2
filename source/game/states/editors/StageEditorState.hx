@@ -1823,11 +1823,19 @@ class StageEditorState extends MusicBeatState
 		final boyfriendData = boyfriend != null ? layersMap.get(boyfriend) : null;
 
 		var spritesArray:Array<Dynamic> = [];
+		var objectsArray:Array<Dynamic> = [];
 		var objectsData:Array<SpriteData> = [for (_ => i in layersMap) i];
 		objectsData.sort((a, b) -> return a.order > b.order ? 1 : -1);
 		for (dataObj in objectsData) {
 			if (dataObj.tag == null || dataObj.tag.length == 0) continue;
-			if (['gfGroup', 'boyfriendGroup', 'dadGroup'].contains(dataObj.tag)) continue;
+
+			// Add character groups to objects array
+			if (['gfGroup', 'boyfriendGroup', 'dadGroup'].contains(dataObj.tag)) {
+				objectsArray.push({type: dataObj.tag, name: dataObj.tag});
+				continue;
+			}
+
+			// Twist Engine sprites format
 			var spriteEntry:Dynamic = {
 				tag: dataObj.tag,
 				image: dataObj.image,
@@ -1848,6 +1856,26 @@ class StageEditorState extends MusicBeatState
 				if (dataObj.curAnim != null) spriteEntry.curAnim = dataObj.curAnim;
 			}
 			spritesArray.push(spriteEntry);
+
+			// Psych Engine objects format
+			var hasAnims = dataObj.animations != null && dataObj.animations.length > 0;
+			var objEntry:Dynamic = {
+				type: hasAnims ? "animatedSprite" : "sprite",
+				name: dataObj.tag,
+				image: dataObj.image,
+				x: dataObj.x,
+				y: dataObj.y,
+				scale: [dataObj.scaleX ?? 1.0, dataObj.scaleY ?? 1.0],
+				scroll: [dataObj.scrollFactorX ?? 1.0, dataObj.scrollFactorY ?? 1.0],
+				alpha: dataObj.alpha ?? 1.0
+			};
+			if (dataObj.noAntialiasing) objEntry.antialiasing = false;
+			if (dataObj.color != null && dataObj.color != 0xFFFFFFFF) objEntry.color = dataObj.color.toHexString(true, false);
+			if (hasAnims) {
+				objEntry.animations = dataObj.animations;
+				if (dataObj.curAnim != null) objEntry.firstAnimation = dataObj.curAnim;
+			}
+			objectsArray.push(objEntry);
 		}
 
 		final data = Json.stringify({
@@ -1866,7 +1894,8 @@ class StageEditorState extends MusicBeatState
 			camera_girlfriend: stageData.camera_girlfriend ?? [0.0, 0.0],
 			camera_speed: stageData.camera_speed ?? 1,
 
-			sprites: spritesArray
+			sprites: spritesArray,
+			objects: objectsArray
 		}, "\t");
 
 		if (data.length <= 0) return;

@@ -2764,43 +2764,74 @@ class ChartingState extends MusicBeatUIState
 
 		final stageFile = StageData.getStageFile(_song.stage ?? 'stage') ?? StageData.dummy();
 		final stageZoom:Float = stageFile.defaultZoom;
-		final scaleFactor:Float = stageZoom * 0.55;
+		final scaleFactor:Float = stageZoom * 0.85;
 
 		final camCenterX:Float = 640.0;
 		final camCenterY:Float = 360.0;
 		final screenCenterX:Float = FlxG.width * 0.5;
 		final screenCenterY:Float = FlxG.height * 0.5;
 
-		previewStageBg = new FlxSprite();
-		try {
-			previewStageBg.loadGraphic(Paths.image('stageback'));
-			previewStageBg.scrollFactor.set();
-			previewStageBg.scale.set(scaleFactor, scaleFactor);
-			previewStageBg.updateHitbox();
-			previewStageBg.x = (-600 - camCenterX) * scaleFactor + screenCenterX;
-			previewStageBg.y = (-200 - camCenterY) * scaleFactor + screenCenterY;
-			previewStageBg.alpha = 0.5;
-			stagePreviewGroup.add(previewStageBg);
-		} catch(e) {
-			previewStageBg.makeGraphic(FlxG.width, FlxG.height, 0xFF444444);
-			previewStageBg.scrollFactor.set();
-			previewStageBg.screenCenter();
-			previewStageBg.alpha = 0.4;
-			stagePreviewGroup.add(previewStageBg);
-		}
+		// Load stage background objects from stage JSON
+		if (stageFile.objects != null && stageFile.objects.length > 0) {
+			for (obj in stageFile.objects) {
+				var objType:String = obj.type;
+				if (objType == null) continue;
+				if (objType == 'gfGroup' || objType == 'dadGroup' || objType == 'boyfriendGroup'
+					|| objType == 'gf' || objType == 'dad' || objType == 'boyfriend') continue;
+				var imgPath:String = obj.image;
+				if (imgPath == null || imgPath.length == 0) continue;
+				try {
+					var spr = new FlxSprite();
+					var graphic = Paths.image(imgPath);
+					if (graphic == null) continue;
+					spr.loadGraphic(graphic);
+					spr.scrollFactor.set();
+					var objX:Float = obj.x ?? 0.0;
+					var objY:Float = obj.y ?? 0.0;
+					var scaleArr:Array<Dynamic> = obj.scale;
+					var objScaleX:Float = scaleArr != null && scaleArr.length > 0 ? cast(scaleArr[0], Float) : 1.0;
+					var objScaleY:Float = scaleArr != null && scaleArr.length > 1 ? cast(scaleArr[1], Float) : objScaleX;
+					spr.scale.set(scaleFactor * objScaleX, scaleFactor * objScaleY);
+					spr.updateHitbox();
+					spr.x = (objX - camCenterX) * scaleFactor + screenCenterX;
+					spr.y = (objY - camCenterY) * scaleFactor + screenCenterY;
+					spr.alpha = 0.5;
+					stagePreviewGroup.add(spr);
+				} catch(e) {}
+			}
+		} else {
+			// Fallback: load default stage sprites
+			previewStageBg = new FlxSprite();
+			try {
+				previewStageBg.loadGraphic(Paths.image('stageback'));
+				previewStageBg.scrollFactor.set();
+				previewStageBg.scale.set(scaleFactor, scaleFactor);
+				previewStageBg.updateHitbox();
+				previewStageBg.x = (-600 - camCenterX) * scaleFactor + screenCenterX;
+				previewStageBg.y = (-200 - camCenterY) * scaleFactor + screenCenterY;
+				previewStageBg.alpha = 0.5;
+				stagePreviewGroup.add(previewStageBg);
+			} catch(e) {
+				previewStageBg.makeGraphic(FlxG.width, FlxG.height, 0xFF444444);
+				previewStageBg.scrollFactor.set();
+				previewStageBg.screenCenter();
+				previewStageBg.alpha = 0.4;
+				stagePreviewGroup.add(previewStageBg);
+			}
 
-		previewStageFront = new FlxSprite();
-		try {
-			previewStageFront.loadGraphic(Paths.image('stagefront'));
-			previewStageFront.scrollFactor.set();
-			final frontScale:Float = scaleFactor * 1.1;
-			previewStageFront.scale.set(frontScale, frontScale);
-			previewStageFront.updateHitbox();
-			previewStageFront.x = (-650 - camCenterX) * scaleFactor + screenCenterX;
-			previewStageFront.y = (600 - camCenterY) * scaleFactor + screenCenterY;
-			previewStageFront.alpha = 0.5;
-			stagePreviewGroup.add(previewStageFront);
-		} catch(e) {}
+			previewStageFront = new FlxSprite();
+			try {
+				previewStageFront.loadGraphic(Paths.image('stagefront'));
+				previewStageFront.scrollFactor.set();
+				final frontScale:Float = scaleFactor * 1.1;
+				previewStageFront.scale.set(frontScale, frontScale);
+				previewStageFront.updateHitbox();
+				previewStageFront.x = (-650 - camCenterX) * scaleFactor + screenCenterX;
+				previewStageFront.y = (600 - camCenterY) * scaleFactor + screenCenterY;
+				previewStageFront.alpha = 0.5;
+				stagePreviewGroup.add(previewStageFront);
+			} catch(e) {}
+		}
 	}
 
 	function reloadStagePreviewChars()
@@ -2813,7 +2844,7 @@ class ChartingState extends MusicBeatUIState
 
 		final stageFile = StageData.getStageFile(_song.stage ?? 'stage') ?? StageData.dummy();
 		final stageZoom:Float = stageFile.defaultZoom;
-		final scaleFactor:Float = stageZoom * 0.55;
+		final scaleFactor:Float = stageZoom * 0.85;
 
 		final camCenterX:Float = 640.0;
 		final camCenterY:Float = 360.0;
@@ -2828,7 +2859,7 @@ class ChartingState extends MusicBeatUIState
 			previewGF.updateHitbox();
 			previewGF.x = (stageFile.girlfriend[0] - camCenterX) * scaleFactor + screenCenterX;
 			previewGF.y = (stageFile.girlfriend[1] - camCenterY) * scaleFactor + screenCenterY;
-			previewGF.alpha = 0.55;
+			previewGF.alpha = 0.6;
 			previewGF.active = true;
 			if (!stageFile.hide_girlfriend)
 				stagePreviewGroup.add(previewGF);
@@ -2842,7 +2873,7 @@ class ChartingState extends MusicBeatUIState
 			previewDad.updateHitbox();
 			previewDad.x = (stageFile.opponent[0] - camCenterX) * scaleFactor + screenCenterX;
 			previewDad.y = (stageFile.opponent[1] - camCenterY) * scaleFactor + screenCenterY;
-			previewDad.alpha = 0.55;
+			previewDad.alpha = 0.6;
 			previewDad.active = true;
 			stagePreviewGroup.add(previewDad);
 		} catch(e) {}
@@ -2855,7 +2886,7 @@ class ChartingState extends MusicBeatUIState
 			previewBF.updateHitbox();
 			previewBF.x = (stageFile.boyfriend[0] - camCenterX) * scaleFactor + screenCenterX;
 			previewBF.y = (stageFile.boyfriend[1] - camCenterY) * scaleFactor + screenCenterY;
-			previewBF.alpha = 0.55;
+			previewBF.alpha = 0.6;
 			previewBF.active = true;
 			stagePreviewGroup.add(previewBF);
 		} catch(e) {}
@@ -2865,7 +2896,7 @@ class ChartingState extends MusicBeatUIState
 
 	function updateGridTransparency()
 	{
-		final gridAlpha:Float = stagePreviewVisible ? 0.6 : 1.0;
+		final gridAlpha:Float = stagePreviewVisible ? 0.35 : 1.0;
 		if (gridLayer != null)
 		{
 			gridLayer.forEachAlive(function(spr:FlxSprite) { spr.alpha = gridAlpha; });

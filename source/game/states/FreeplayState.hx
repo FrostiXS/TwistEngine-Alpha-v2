@@ -16,6 +16,7 @@ import game.states.substates.GameplayChangersSubstate;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
+import flixel.text.FlxText;
 import flixel.tweens.*;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
@@ -88,6 +89,7 @@ class FreeplayState extends MusicBeatState
 	var lerpScore:Int = 0;
 	var lerpRating:Float = 0;
 	var scoreText:FlxText;
+	var diffText:FlxText;
 
 	override function destroy()
 	{
@@ -117,6 +119,11 @@ class FreeplayState extends MusicBeatState
 		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreText.cameras = [camHUD];
 		add(scoreText);
+
+		diffText = new FlxText(FlxG.width - 400, 90, 380, "< NORMAL >", 24);
+		diffText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		diffText.cameras = [camHUD];
+		add(diffText);
 
 		add(camFollow = new FlxObject(0, 0, 1, 1));
 		FlxG.camera.follow(camFollow, LOCKON, 0.05);
@@ -249,6 +256,10 @@ class FreeplayState extends MusicBeatState
 					if (controls.UI_DOWN_P)
 						changeItem(1);
 				}
+				if (controls.UI_LEFT_P)
+					changeDifficulty(-1);
+				if (controls.UI_RIGHT_P)
+					changeDifficulty(1);
 				if (selectedSong != null)
 				{
 					if (controls.ACCEPT || (!forMouseClick && FlxG.mouse.justReleased))
@@ -373,6 +384,17 @@ class FreeplayState extends MusicBeatState
 				{
 					selectedSong = songMeta;
 					ModsFolder.switchMod(selectedSong.modPack);
+
+					// Initialize difficulty index for new song
+					var diffs = curDifficulties;
+					if (diffs != null && diffs.length > 0)
+					{
+						if (curDifficultyIndex < 0 || curDifficultyIndex >= diffs.length)
+							curDifficultyIndex = Std.int(Math.min(1, diffs.length - 1));
+					}
+					else
+						curDifficultyIndex = 0;
+					updateDifficultyDisplay();
 					final newColor:Int = selectedSong.data.freeplayColor.getColorFromDynamic() ?? 0xFFABCACA;
 					if (newColor != intendedColor)
 					{
@@ -398,6 +420,32 @@ class FreeplayState extends MusicBeatState
 		call("changeItemPost", [huh, snap]);
 	}
 
+	function changeDifficulty(change:Int)
+	{
+		var diffs = curDifficulties;
+		if (diffs == null || diffs.length <= 1) return;
+
+		curDifficultyIndex += change;
+		if (curDifficultyIndex < 0) curDifficultyIndex = diffs.length - 1;
+		if (curDifficultyIndex >= diffs.length) curDifficultyIndex = 0;
+
+		FlxG.sound.play(Paths.sound('scrollMenu'));
+		updateDifficultyDisplay();
+		updateSongSave();
+	}
+
+	function updateDifficultyDisplay()
+	{
+		if (diffText == null) return;
+		var diffs = curDifficulties;
+		if (diffs == null || diffs.length == 0)
+			diffText.text = "< NORMAL >";
+		else if (curDifficultyIndex >= 0 && curDifficultyIndex < diffs.length)
+			diffText.text = "< " + diffs[curDifficultyIndex].toUpperCase() + " >";
+		else
+			diffText.text = "< NORMAL >";
+	}
+
 	function updateSongSave()
 	{
 		call("onUpdateSongSave");
@@ -421,7 +469,7 @@ class FreeplayState extends MusicBeatState
 	}
 
 	inline function getHealthIcon(group:FlxSpriteGroup):HealthIcon
-		return group == null ? null : cast group.members[1];
+		return group == null ? null : (group.members.length > 2 ? cast group.members[2] : null);
 
 	/*
 		public override function beatHit()

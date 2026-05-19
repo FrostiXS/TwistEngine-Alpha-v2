@@ -59,9 +59,15 @@ class WeekEditorState extends MusicBeatState
 		DiscordClient.changePresence("Week Editor", null);
 		#end
 
-		var bg:FlxSprite = new FlxSprite(Paths.image('menuDesat'));
+		var bg:FlxSprite = new FlxSprite();
+		var bgGraphic = Paths.image('menuDesat');
+		if (bgGraphic != null)
+			bg.loadGraphic(bgGraphic);
+		else
+			bg.makeGraphic(FlxG.width, FlxG.height, 0xFF1A3A2A);
 		bg.color = 0xFF1A3A2A;
 		bg.screenCenter();
+		bg.scrollFactor.set();
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
