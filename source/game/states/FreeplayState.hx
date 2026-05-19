@@ -113,7 +113,7 @@ class FreeplayState extends MusicBeatState
 		grpSongs.visible = true;
 
 		scoreText = new flixel.text.FlxText(FlxG.width - 400, 20, 380, "", 32);
-		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT, flixel.text.FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreText.cameras = [camHUD];
 		add(scoreText);
 
