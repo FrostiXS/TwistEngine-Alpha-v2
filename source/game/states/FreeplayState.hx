@@ -18,6 +18,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.tweens.*;
+import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import openfl.media.Sound;
@@ -87,8 +88,8 @@ class FreeplayState extends MusicBeatState
 	
 	var lerpScore:Int = 0;
 	var lerpRating:Float = 0;
-	var scoreText:flixel.text.FlxText;
-	var diffText:flixel.text.FlxText;
+	var scoreText:FlxText;
+	var diffText:FlxText;
 
 	override function destroy()
 	{
@@ -114,12 +115,12 @@ class FreeplayState extends MusicBeatState
 		add(grpSongs = new FlxGroup());
 		grpSongs.visible = true;
 
-		scoreText = new flixel.text.FlxText(FlxG.width - 400, 20, 380, "", 32);
+		scoreText = new FlxText(FlxG.width - 400, 20, 380, "", 32);
 		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreText.cameras = [camHUD];
 		add(scoreText);
 
-		diffText = new flixel.text.FlxText(FlxG.width - 400, 90, 380, "< NORMAL >", 24);
+		diffText = new FlxText(FlxG.width - 400, 90, 380, "< NORMAL >", 24);
 		diffText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		diffText.cameras = [camHUD];
 		add(diffText);

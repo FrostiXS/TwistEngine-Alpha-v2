@@ -188,7 +188,7 @@ class PlayState extends MusicBeatState {
 			}
 		}
 		PlayState.storyDifficulty = index;
-		trace(Difficulty.list, SONG.difficulty, PlayState.storyDifficulty);
+
 	}
 
 	public var stageData:StageFile;
@@ -501,7 +501,7 @@ class PlayState extends MusicBeatState {
 	public override function create(){
 		// if (Main.canClearMem) Paths.clearUnusedMemory();
 		Main.canClearMem = false;
-		trace('Start State.');
+
 		
 		add(new game.objects.ui.DebugConsole());
 		/*
@@ -959,7 +959,7 @@ class PlayState extends MusicBeatState {
 
 			Paths.clearUnusedMemory();
 
-			trace('Done!');
+
 
 			if (eventNotes.length < 1)
 				checkEventNote();
@@ -1999,7 +1999,7 @@ class PlayState extends MusicBeatState {
 			rangeStart = loopSongBounds.start;
 			rangeEnd = loopSongBounds.end;
 		}
-		trace('Load Events...');
+
 		loadEvents('events', rangeStart, rangeEnd);
 
 		//Event Notes
@@ -2007,11 +2007,11 @@ class PlayState extends MusicBeatState {
 
 		if (SONG.arrowSkin.isNullOrEmpty() || Paths.image(SONG.arrowSkin) == null)
 		{
-			trace("Note skin " + SONG.arrowSkin + " doesn't exits.");
+			trace("Note skin " + SONG.arrowSkin + " doesn't exist.");
 			SONG.arrowSkin = Constants.DEFAULT_NOTE_SKIN;
 		}
 
-		trace('Load Chart...');
+
 		final noteData:Array<SwagSection> = songData.notes;
 		var swagNote:Note;
 		var sustainNote:Note;
@@ -2099,7 +2099,7 @@ class PlayState extends MusicBeatState {
 			}
 		}
 
-		trace('Events: ' + eventNotes.length);
+
 		// trace(unspawnNotes.length);
 
 		for (i in strumLines)
@@ -2123,10 +2123,9 @@ class PlayState extends MusicBeatState {
 		for (i in lastNewNoteTypes)
 			loadScript(Constants.SONG_NOTETYPES_FILES_FOLDER + "/" + i);
 		callOnScripts('onSongGenerated');
-		trace('Song Loaded.');
 
 		#if sys
-		trace('Took ${Sys.time() - prevTime} seconds');
+		trace('Song loaded in ${Sys.time() - prevTime}s');
 		#end
 	}
 	function loadEvents(json:haxe.extern.EitherType<String, Song>, ?rangeStart:Null<Int>, ?rangeEnd:Null<Int>):Void
@@ -2587,7 +2586,6 @@ class PlayState extends MusicBeatState {
 		if (!ClientPrefs.noReset && controls.RESET && canReset && !inCutscene && startedCountdown && !endingSong)
 		{
 			health = 0;
-			trace("RESET = True");
 		}
 
 		if (modManager != null && modManager.active)
@@ -3339,9 +3337,6 @@ class PlayState extends MusicBeatState {
 				{
 					// var difficulty:String = CoolUtil.getDifficultyFilePath();
 
-					trace('LOADING NEXT SONG');
-					trace(Paths.formatToSongPath(PlayState.storyPlaylist[0]));
-
 					// FlxTransitionableState.skipNextTransIn = true;
 					// FlxTransitionableState.skipNextTransOut = true;
 
@@ -3357,7 +3352,6 @@ class PlayState extends MusicBeatState {
 			}
 			else
 			{
-				trace('WENT BACK TO FREEPLAY??');
 				cancelMusicFadeTween();
 				MusicBeatState.switchState(#if EDITORS_ALLOWED SongsState.inDebugFreeplay ? new SongsState() : #end new FreeplayState());
 				/*
@@ -3601,7 +3595,7 @@ class PlayState extends MusicBeatState {
 				pressArray[dir] = true;
 				holdArray[dir] = true;
 				// releaseArray[dir] = false;
-				trace('justPressed $dir ass $leStrumTime  ${Conductor.songPosition}');
+
 				replayHandler.data.justPress.shift();
 			}
 
@@ -3613,7 +3607,7 @@ class PlayState extends MusicBeatState {
 				holdArray[dir] = false;
 				// holdArray[dir] = false;
 				// pressArray[dir] = false;
-				trace('release $dir ass $leStrumTime  ${Conductor.songPosition}');
+
 				replayHandler.data.release.shift();
 			}
 			// trace (pressArray , holdArray , releaseArray);

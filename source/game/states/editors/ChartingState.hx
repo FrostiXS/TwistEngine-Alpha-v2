@@ -273,7 +273,7 @@ class ChartingState extends MusicBeatUIState
 		}
 		if (_song.arrowSkin == null || _song.arrowSkin.length < 1 || Paths.image('game/ui/notes/${_song.arrowSkin}') == null)
 		{
-			trace("Note skin " + _song.arrowSkin + " doesn't exits.");
+			trace("Note skin " + _song.arrowSkin + " doesn't exist.");
 			_song.arrowSkin = Constants.DEFAULT_NOTE_SKIN;
 		}
 		botPlayChartMod = false;
