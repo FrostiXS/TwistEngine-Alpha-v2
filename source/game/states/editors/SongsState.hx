@@ -231,7 +231,7 @@ class SongsState extends MusicBeatState
 					}
 					else
 					{
-						trace('Couldnt find file for play');
+						FlxG.log.warn('Could not find file for play');
 						FlxG.sound.play(Paths.sound('whyNotLol/Voice (' + FlxG.random.int(1, 20) + ')'));
 					}
 				}
@@ -315,7 +315,6 @@ class SongsState extends MusicBeatState
 		FlxG.camera.scroll.y = point.y - FlxG.camera.height / 2;
 		point.put();
 		final data = Highscore.getSongData(songs[curSelected][0]);
-		trace(songs[curSelected]);
 		if (data == null)
 		{
 			intendedScore = 0;

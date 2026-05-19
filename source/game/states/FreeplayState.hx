@@ -17,6 +17,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.tweens.*;
+import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import openfl.media.Sound;
@@ -86,7 +87,7 @@ class FreeplayState extends MusicBeatState
 	
 	var lerpScore:Int = 0;
 	var lerpRating:Float = 0;
-	var scoreText:flixel.text.FlxText;
+	var scoreText:FlxText;
 
 	override function destroy()
 	{
@@ -112,13 +113,13 @@ class FreeplayState extends MusicBeatState
 		add(grpSongs = new FlxGroup());
 		grpSongs.visible = true;
 
-		scoreText = new flixel.text.FlxText(FlxG.width - 400, 20, 380, "", 32);
-		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT, flixel.text.FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		scoreText = new FlxText(FlxG.width - 400, 20, 380, "", 32);
+		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreText.cameras = [camHUD];
 		add(scoreText);
 
 		add(camFollow = new FlxObject(0, 0, 1, 1));
-		FlxG.camera.follow(camFollow, flixel.cameras.FlxCameraFollowStyle.LOCKON, 0.05);
+		FlxG.camera.follow(camFollow, LOCKON, 0.05);
 
 		// Thread.create(createSongs);
 		generateSongsList();
